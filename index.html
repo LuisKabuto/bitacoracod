@@ -605,9 +605,20 @@ function setupFirebaseListener() {
 
 function connectFirebase() {
     try {
-        const cfgText = document.getElementById('firebase-config').value.trim();
+        let cfgText = document.getElementById('firebase-config').value.trim();
         if (!cfgText) return showToast('⚠️ Pega la configuración de Firebase');
+        
+        // 1. Si pegaste "const firebaseConfig = {...}", extraemos solo lo que está entre { y }
+        if (cfgText.includes('{')) {
+            cfgText = cfgText.substring(cfgText.indexOf('{'), cfgText.lastIndexOf('}') + 1);
+        }
+
+        // 2. Firebase da las claves sin comillas. Se las añadimos automáticamente para que sea un JSON válido
+        cfgText = cfgText.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+
+        // 3. Ahora sí, lo convertimos a objeto
         const cfg = JSON.parse(cfgText);
+        
         if (firebaseApp) firebaseApp.delete();
         firebaseApp = firebase.initializeApp(cfg);
         firebaseDb = firebase.database();
@@ -622,7 +633,6 @@ function connectFirebase() {
         showToast('❌ Error: ' + err.message);
     }
 }
-
 function disconnectFirebase() {
     if (firebaseApp) {
         if (firebaseListenerActive) {
