@@ -9,7 +9,8 @@
     'js/services/attendance.service.js',
     'js/services/tasks.service.js',
     'js/services/users.service.js',
-    'js/services/reports.service.js'
+    'js/services/reports.service.js',
+    'js/modules/auth-ui.js'
   ];
   let index = 0;
   function loadNext() {
