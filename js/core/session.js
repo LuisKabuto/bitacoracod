@@ -1,0 +1,2 @@
+/* Bitácora PRO v3 - sesión actual */
+window.Bitacora=window.Bitacora||{};(function(B){B.currentUser=null;function bind(){const rt=B.BitacoraRuntimeAdapter||window.BitacoraRuntimeAdapter;if(!rt||!rt.onAuth)return;rt.onAuth(user=>{B.currentUser=user||null;window.dispatchEvent(new CustomEvent('bitacora:session-changed',{detail:user||null}))})}window.addEventListener('bitacora:runtime-ready',bind,{once:true});if(B.BitacoraRuntimeAdapter)bind()})(window.Bitacora);
