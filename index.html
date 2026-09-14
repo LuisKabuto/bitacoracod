@@ -3,487 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bitácora Cloud PRO - Sharp Edition</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#05070a;--panel:#0b0f14;--cyan:#00e5ff;--mag:#ff2bd6;--green:#00ff88;--amber:#ffb300;--red:#ff3b3b;--text:#cfd8dc;--line:#12303a}
-*{margin:0;padding:0;box-sizing:border-box;border-radius:0;font-family:'Share Tech Mono',monospace}
-body{background:var(--bg);color:var(--text);min-height:100vh}
-body::after{content:'';position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 2px,#00e5ff05 2px 4px)}
-.wrap{max-width:1200px;margin:0 auto;padding:16px}
-h1,h2,h3{color:var(--cyan);letter-spacing:2px;text-transform:uppercase}
-h1{font-size:22px;text-shadow:0 0 10px #00e5ff88}
-h2{font-size:16px;margin-bottom:6px}
-.sub{color:#5f7a84;font-size:12px;margin-bottom:14px}
-.panel{background:var(--panel);border:1px solid var(--line);box-shadow:0 0 12px #00e5ff14,inset 0 0 18px #00e5ff08;padding:16px;margin-bottom:16px}
-.panel-head{border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:12px}
-.btn{background:transparent;border:1px solid var(--cyan);color:var(--cyan);padding:8px 14px;cursor:pointer;letter-spacing:1px;font-size:13px;transition:.15s}
-.btn:hover{background:var(--cyan);color:#000;box-shadow:0 0 14px #00e5ffaa}
-.btn-red{border-color:var(--red);color:var(--red)}.btn-red:hover{background:var(--red);box-shadow:0 0 14px #ff3b3baa}
-.btn-green{border-color:var(--green);color:var(--green)}.btn-green:hover{background:var(--green);box-shadow:0 0 14px #00ff88aa}
-.btn-mag{border-color:var(--mag);color:var(--mag)}.btn-mag:hover{background:var(--mag);box-shadow:0 0 14px #ff2bd6aa}
-.btn:disabled{opacity:.35;cursor:not-allowed}
-input,select{background:#000;border:1px solid var(--line);color:var(--text);padding:8px;font-size:13px;width:100%}
-input:focus,select:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 8px #00e5ff55}
-label{font-size:12px;color:#5f7a84;display:block;margin:8px 0 4px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{color:var(--cyan);text-align:left;border-bottom:1px solid var(--line);padding:6px}
-td{border-bottom:1px solid #0e222b;padding:6px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.stat{border:1px solid var(--line);padding:12px;text-align:center}
-.stat b{display:block;font-size:28px;color:var(--green);text-shadow:0 0 8px #00ff8877}
-.stat.warn b{color:var(--amber)}.stat.mag b{color:var(--mag)}
-.badge{padding:2px 8px;border:1px solid;font-size:11px}
-.b-green{color:var(--green);border-color:var(--green)}.b-amber{color:var(--amber);border-color:var(--amber)}
-.b-red{color:var(--red);border-color:var(--red)}.b-cyan{color:var(--cyan);border-color:var(--cyan)}
-.b-mag{color:var(--mag);border-color:var(--mag)}.b-gray{color:#78909c;border-color:#78909c}
-.chip{display:inline-block;border:1px solid var(--mag);color:var(--mag);padding:1px 6px;font-size:11px;margin-right:4px}
-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--cyan);padding:12px 0;margin-bottom:14px}
-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
-nav .btn{font-size:12px;padding:6px 10px}
-.view{display:none}.view.active{display:block}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
-.row>*{flex:1;min-width:140px}
-.row>.btn{flex:0 0 auto}
-#toastBox{position:fixed;top:14px;right:14px;z-index:1000;display:flex;flex-direction:column;gap:8px}
-.toast{background:#000;border:1px solid var(--cyan);color:var(--cyan);padding:10px 16px;box-shadow:0 0 14px #00e5ff66;animation:tin .2s}
-@keyframes tin{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
-#demoBanner{background:#3a2a00;border:1px solid var(--amber);color:var(--amber);text-align:center;padding:6px;font-size:12px}
-.bar{height:8px;background:#0e222b;margin:4px 0 10px}.bar i{display:block;height:100%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
-.authbox{max-width:380px;margin:8vh auto}
-.linklike{background:none;border:none;color:var(--mag);cursor:pointer;font-size:12px;text-decoration:underline}
-</style>
+<meta name="theme-color" content="#0f172a">
+<meta name="description" content="Bitácora operativa para control de jornada, tareas y reportes.">
+<title>Bitácora PRO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-<div id="toastBox"></div>
-<div id="demoBanner" style="display:none">⚠️ MODO DEMO — datos simulados en memoria. Pega tu firebaseConfig para conectar Firestore.</div>
+<div id="toastBox" aria-live="polite"></div>
+<div id="demoBanner" class="demo-banner" style="display:none">Modo demo — los datos se mantienen en memoria.</div>
 
-<!-- ═══════════ LOGIN ═══════════ -->
-<div class="wrap view active" id="view-login">
-  <div class="panel authbox">
-    <div class="panel-head"><h1>Bitácora PRO</h1><div class="sub">v.2.1 // Mando — Sharp Edition</div></div>
+<main id="view-login" class="auth-page view active">
+  <section class="auth-card">
+    <div class="brand-block"><div class="brand-mark">B</div><div><div class="brand-name">Bitácora</div><div class="brand-sub">Gestión operativa</div></div></div>
+    <div class="auth-heading"><h1>Acceso al sistema</h1><p>Control de jornada, tareas y operación.</p></div>
     <div id="loginForm">
-      <label>Email</label><input id="loginEmail" type="email">
-      <label>Contraseña</label><input id="loginPassword" type="password">
-      <div class="row"><button class="btn btn-green" id="btnLogin">Ingresar</button></div>
-      <button class="linklike" id="goRegister">¿No tienes cuenta? Regístrate</button>
-      <div class="sub" id="demoHint" style="margin-top:10px"></div>
+      <label for="loginEmail">Correo electrónico</label><input id="loginEmail" type="email" autocomplete="username">
+      <label for="loginPassword">Contraseña</label><input id="loginPassword" type="password" autocomplete="current-password">
+      <button class="btn btn-primary btn-block" id="btnLogin">Ingresar</button><button class="linklike" id="goRegister">Crear una cuenta</button><div class="auth-hint" id="demoHint"></div>
     </div>
     <div id="registerForm" style="display:none">
-      <label>Nombre Completo</label><input id="regName">
-      <label>Email</label><input id="regEmail" type="email">
-      <label>Contraseña</label><input id="regPassword" type="password">
-      <div class="row"><button class="btn btn-mag" id="btnRegister">Crear Cuenta</button></div>
-      <button class="linklike" id="goLogin">¿Ya tienes cuenta? Inicia sesión</button>
+      <label for="regName">Nombre completo</label><input id="regName" autocomplete="name"><label for="regEmail">Correo electrónico</label><input id="regEmail" type="email" autocomplete="username"><label for="regPassword">Contraseña</label><input id="regPassword" type="password" autocomplete="new-password">
+      <button class="btn btn-primary btn-block" id="btnRegister">Crear cuenta</button><button class="linklike" id="goLogin">Volver al acceso</button>
+    </div>
+  </section>
+</main>
+
+<div id="view-app" class="app-shell view">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="brand-mark">B</div><div><strong>Bitácora</strong><span>Gestión operativa</span></div></div>
+    <nav class="side-nav" aria-label="Navegación principal">
+      <div class="nav-label">Principal</div><button class="nav-item active" data-view="dashboard"><span>▦</span>Dashboard</button><button class="nav-item" data-view="registro"><span>◷</span>Mi jornada</button><button class="nav-item" data-view="tareas"><span>✓</span>Tareas</button>
+      <div class="nav-label">Supervisión</div><button class="nav-item" data-view="mando"><span>◉</span>Centro de mando</button><button class="nav-item" data-view="reportes"><span>▤</span>Reportes</button>
+    </nav><div class="sidebar-footer"><div class="online-dot"></div><span>Sistema operativo</span></div>
+  </aside>
+  <div class="main-area">
+    <header class="topbar"><div class="mobile-brand"><div class="brand-mark">B</div><strong>Bitácora</strong></div><div class="topbar-title"><span id="pageTitle">Dashboard</span><small id="pageSubtitle">Resumen de operación</small></div><div class="topbar-user"><div class="avatar" id="userAvatar">U</div><div class="user-meta"><strong id="userBadge"></strong><span>Sesión activa</span></div><button class="icon-btn logout" id="btnLogout" title="Cerrar sesión">↪</button></div></header>
+    <div class="content-wrap">
+      <section class="view active" id="view-dashboard"><div class="page-head"><div><span class="eyebrow">OPERACIÓN</span><h1>Resumen de hoy</h1><p>Estado actual del equipo y actividad operativa.</p></div><div class="date-pill" id="dashboardDate"></div></div>
+        <div class="stats-grid"><article class="stat-card"><div class="stat-icon blue">◉</div><div><span>Personal activo</span><strong id="statActive">0</strong><small>En jornada ahora</small></div></article><article class="stat-card"><div class="stat-icon amber">✓</div><div><span>Tareas pendientes</span><strong id="statPending">0</strong><small>Por completar</small></div></article><article class="stat-card"><div class="stat-icon green">✓</div><div><span>Completadas hoy</span><strong id="statDone">0</strong><small>Finalizadas</small></div></article></div>
+        <div class="dashboard-grid"><article class="card"><div class="card-head"><div><h2>Horas por persona</h2><p>Acumulado de la jornada</p></div></div><div id="hoursPerPerson" class="metric-list">Cargando...</div></article><article class="card"><div class="card-head"><div><h2>Estado de tareas</h2><p>Distribución actual</p></div></div><div id="taskStatus" class="task-summary">Cargando...</div></article><article class="card activity-card"><div class="card-head"><div><h2>Actividad reciente</h2><p>Últimos movimientos</p></div></div><div id="activityFeed" class="activity-feed">Cargando actividad...</div></article></div>
+      </section>
+      <section class="view" id="view-registro"><div class="page-head"><div><span class="eyebrow">JORNADA</span><h1>Mi jornada</h1><p>Registra tu actividad y controla tus horas.</p></div></div><div class="card jornada-card"><div class="jornada-status"><div><span class="label-muted">Estado actual</span><div id="estadoOficina" class="status-badge neutral">Fuera de la oficina</div></div><div><span class="label-muted">Entrada</span><strong id="horaEntrada">--:--</strong></div></div><div class="action-panel"><input id="inputActividad" placeholder="Actividad a realizar"><button class="btn btn-primary" id="btnCheckIn">Marcar entrada</button><button class="btn btn-secondary" id="btnRegistrarEntrada">Cambiar actividad</button><button class="btn btn-danger" id="btnCheckOut">Registrar salida</button></div><div class="section-head"><h2>Historial de hoy</h2></div><div class="table-wrap"><table><thead><tr><th>Actividad</th><th>Entrada</th><th>Salida</th><th>Horas</th></tr></thead><tbody id="historialHoyBody"></tbody></table></div></div></section>
+      <section class="view" id="view-tareas"><div class="page-head"><div><span class="eyebrow">OPERACIÓN</span><h1>Tareas</h1><p>Crea y asigna trabajo al equipo.</p></div></div><div class="card form-card"><div class="card-head"><div><h2>Nueva tarea</h2><p>Define el responsable y las condiciones de la tarea.</p></div></div><label for="taskTitle">Título</label><input id="taskTitle" placeholder="Ej. Revisar solicitudes pendientes"><div class="form-grid"><div><label for="taskCategory">Categoría</label><select id="taskCategory"><option>Call Center</option><option>Supervisión</option><option>Solicitudes</option><option>Administrativo</option><option>Otro</option></select></div><div><label for="taskAssign">Asignar a</label><select id="taskAssign"></select></div></div><div class="check-row"><input type="checkbox" id="taskEphemeral"><label for="taskEphemeral">Tarea de un solo día, vence hoy a las 23:59</label></div><label for="taskTags">Etiquetas</label><input id="taskTags" placeholder="urgente, fiscalización"><div class="form-actions"><button class="btn btn-primary" id="btnAssign">Asignar tarea</button></div></div><div class="card"><div class="card-head"><div><h2>Trabajo del equipo</h2><p>Seguimiento y validación de tareas.</p></div></div><div id="teamTasks" class="table-wrap"></div></div></section>
+      <section class="view" id="view-mando"><div class="page-head"><div><span class="eyebrow">SUPERVISIÓN</span><h1>Centro de mando</h1><p>Control operativo y correcciones administrativas.</p></div></div><div class="card form-card"><div class="card-head"><div><h2>Registro histórico</h2><p>Agrega actividades de jornadas anteriores.</p></div></div><div class="form-grid four"><div><label for="manualOperator">Operador</label><select id="manualOperator"></select></div><div><label for="manualDate">Fecha</label><input id="manualDate" type="date"></div><div><label for="manualIn">Entrada</label><input id="manualIn" type="time"></div><div><label for="manualOut">Salida</label><input id="manualOut" type="time"></div></div><div class="inline-form"><input id="manualActivity" placeholder="Actividad realizada"><button class="btn btn-secondary" id="btnManualSave">Guardar registro</button></div></div><div class="card"><div class="card-head"><div><h2>Jornada en tiempo real</h2><p>Personal presente y estado actual.</p></div></div><div class="table-wrap"><table><thead><tr><th>Empleado</th><th>Estado</th><th>Entrada</th><th>Acción</th></tr></thead><tbody id="jornadaBody"></tbody></table></div></div><div class="card"><div class="card-head"><div><h2>Tareas del equipo</h2><p>Vista de supervisión.</p></div></div><div id="teamTasksMando"></div></div></section>
+      <section class="view" id="view-reportes"><div class="page-head"><div><span class="eyebrow">INFORMACIÓN</span><h1>Reportes</h1><p>Exporta información para RRHH y auditoría.</p></div></div><div class="card form-card"><div class="card-head"><div><h2>Asistencia mensual</h2><p>Resumen de jornadas, horas y retardos.</p></div></div><div class="inline-form"><div class="field-grow"><label for="periodSelect">Período</label><input id="periodSelect" type="month"></div><button class="btn btn-primary" id="btnExportMonthly">Exportar asistencia</button></div></div><div class="card"><div class="card-head"><div><h2>Exportaciones generales</h2><p>Descarga los datos operativos disponibles.</p></div></div><div class="export-grid"><button class="export-item" id="btnExportCSV"><strong>CSV</strong><span>Bitácora completa</span></button><button class="export-item" id="btnExportPDF"><strong>PDF</strong><span>Dashboard actual</span></button></div></div></section>
     </div>
   </div>
 </div>
-
-<!-- ═══════════ APP ═══════════ -->
-<div class="wrap view" id="view-app">
-<header><h1>Bitácora PRO <span class="sub">v.2.1 // Mando</span></h1>
-  <div class="sub">SYS.STAT: <span style="color:var(--green)">ONLINE</span> | SEC.LVL: MAX | <span id="userBadge"></span></div>
-</header>
-<nav>
-  <button class="btn" data-view="dashboard">📊 Dashboard</button>
-  <button class="btn" data-view="registro">⏱️ Mi Registro</button>
-  <button class="btn" data-view="tareas">📌 Crear Tareas</button>
-  <button class="btn" data-view="mando">👥 Centro de Mando</button>
-  <button class="btn" data-view="reportes">📄 Reportes</button>
-  <button class="btn btn-red" id="btnLogout">🚪 Cerrar Sesión</button>
-</nav>
-
-<!-- DASHBOARD -->
-<section class="view active" id="view-dashboard">
-  <div class="panel"><div class="panel-head"><h2>Estado Operativo</h2><div class="sub">Monitoreo de actividad en tiempo real</div></div>
-    <div class="grid3">
-      <div class="stat"><b id="statActive">0</b>Personal Activo</div>
-      <div class="stat warn"><b id="statPending">0</b>Tareas Pendientes</div>
-      <div class="stat mag"><b id="statDone">0</b>Completadas Hoy</div>
-    </div>
-  </div>
-  <div class="grid3">
-    <div class="panel"><h2>Horas por Persona (Hoy)</h2><div id="hoursPerPerson" class="sub">Cargando...</div></div>
-    <div class="panel"><h2>Estado de Tareas</h2><div id="taskStatus" class="sub">Cargando...</div></div>
-    <div class="panel"><h2>Feed de Actividad</h2><div id="activityFeed" class="sub">Cargando actividad...</div></div>
-  </div>
-</section>
-
-<!-- MI REGISTRO -->
-<section class="view" id="view-registro">
-  <div class="panel"><div class="panel-head"><h2>Mi Control de Tiempo</h2><div class="sub">Registra tu entrada y salida</div></div>
-    <div class="row"><button class="btn btn-green" id="btnCheckIn">🌅 Marcar Entrada</button>
-      <input id="inputActividad" placeholder="Actividad a realizar">
-      <button class="btn" id="btnRegistrarEntrada">Registrar Entrada</button></div>
-    <div class="row"><span id="estadoOficina" class="badge b-gray">⬜ Fuera de la oficina</span>
-      <span class="sub">Hora de entrada: <b id="horaEntrada" style="color:var(--green)">--:--</b></span>
-      <button class="btn btn-red" id="btnCheckOut">Registrar Salida</button></div>
-    <h2 style="margin-top:14px">📋 Mi Historial de Hoy</h2>
-    <table><tr><th>Actividad</th><th>Entrada</th><th>Salida</th><th>Horas</th></tr><tbody id="historialHoyBody"></tbody></table>
-  </div>
-</section>
-
-<!-- CREAR TAREAS -->
-<section class="view" id="view-tareas">
-  <div class="panel"><div class="panel-head"><h2>Asignar Nueva Tarea</h2><div class="sub">Crea tareas y asígnalas al equipo</div></div>
-    <label>Título</label><input id="taskTitle">
-    <div class="row"><div><label>Categoría</label><select id="taskCategory">
-      <option>📞 Call Center</option><option>👔 Supervisión</option><option>📋 Solicitudes</option><option>📁 Administrativo</option><option>🔧 Otro</option></select></div>
-      <div><label>Asignar a</label><select id="taskAssign"></select></div></div>
-    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="taskEphemeral" style="width:auto"> ⚡ Tarea de un solo día (vence hoy 23:59)</label>
-    <label>Etiquetas (separadas por coma)</label><input id="taskTags" placeholder="urgente, fiscalización">
-    <div class="row"><button class="btn btn-mag" id="btnAssign">Asignar</button></div>
-  </div>
-</section>
-
-<!-- CENTRO DE MANDO -->
-<section class="view" id="view-mando">
-  <div class="panel"><div class="panel-head"><h2>⏳ Registro Histórico Manual</h2>
-    <div class="sub">Registra actividades de días anteriores. El sistema calculará las horas automáticamente.</div></div>
-    <div class="row"><div><label>Operador</label><select id="manualOperator"></select></div>
-      <div><label>Fecha</label><input id="manualDate" type="date"></div>
-      <div><label>H. Entrada</label><input id="manualIn" type="time"></div>
-      <div><label>H. Salida</label><input id="manualOut" type="time"></div></div>
-    <div class="row"><input id="manualActivity" placeholder="Actividad"><button class="btn" id="btnManualSave">Guardar Registro Histórico</button></div>
-  </div>
-  <div class="panel"><h2>🕒 Control de Jornada (Tiempo Real)</h2>
-    <table><tr><th>Empleado</th><th>Estado</th><th>H. Entrada</th><th>Acción</th></tr><tbody id="jornadaBody"></tbody></table>
-  </div>
-  <div class="panel"><h2>📋 Tareas del Equipo</h2><div id="teamTasks" class="sub">Cargando...</div></div>
-</section>
-
-<!-- REPORTES -->
-<section class="view" id="view-reportes">
-  <div class="panel"><div class="panel-head"><h2>Reportes y Exportes</h2><div class="sub">Generación de archivos para RRHH y auditoría</div></div>
-    <div class="row"><div><label>Mes (RRHH)</label><input id="periodSelect" type="month"></div>
-      <button class="btn btn-green" id="btnExportMonthly">📥 Exportar Asistencia Mensual (RRHH)</button></div>
-    <div class="row"><button class="btn" id="btnExportCSV">📊 Exportar Todo a CSV</button>
-      <button class="btn btn-mag" id="btnExportPDF">📄 Exportar Dashboard a PDF</button></div>
-  </div>
-</section>
-</div>
-
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script>
-/* ══════════════════ CONFIG FIREBASE ══════════════════
-   Deja vacío para MODO DEMO. Pega aquí tu config real. */
-const firebaseConfig = { apiKey:"", authDomain:"", projectId:"", storageBucket:"", messagingSenderId:"", appId:"" };
-const DEMO = !firebaseConfig.apiKey;
-let auth=null, db=null, FV=null, TS=null;
-if(!DEMO){ firebase.initializeApp(firebaseConfig); auth=firebase.auth(); db=firebase.firestore();
-  FV=firebase.firestore.FieldValue; TS=firebase.firestore.Timestamp; }
-
-/* ══════════════════ HELPERS DE TIEMPO (Caracas UTC-4) ══════════════════ */
-let CONFIG={ timezone:'America/Caracas', defaultSchedule:{start:'08:00',end:'15:00'}, lateToleranceMinutes:10 };
-const fmtD=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Caracas',year:'numeric',month:'2-digit',day:'2-digit'});
-const fmtT=new Intl.DateTimeFormat('en-GB',{timeZone:'America/Caracas',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
-const todayStr=()=>fmtD.format(new Date());
-const nowHM=()=>fmtT.format(new Date());
-const hmMin=(hm)=>{const[h,m]=hm.split(':').map(Number);return h*60+m;};
-const isLate=(hm)=>hmMin(hm)>hmMin(CONFIG.defaultSchedule.start)+CONFIG.lateToleranceMinutes;
-const dayBounds=(d)=>({start:new Date(d+'T00:00:00-04:00'),end:new Date(d+'T23:59:59-04:00')});
-const el=(id)=>document.getElementById(id);
-const esc=(s)=>String(s==null?'':s).replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});
-function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;el('toastBox').appendChild(t);setTimeout(function(){t.remove();},3500);}
-function askJustification(){return new Promise(function(res,rej){
-  const rs=['🚗 Tráfico','🏥 Cita médica','🛠️ Incidencia técnica','👤 Motivo personal'];
-  const ov=document.createElement('div');
-  ov.style.cssText='position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;z-index:999';
-  ov.innerHTML='<div class="panel" style="min-width:300px"><h2>⚠️ Retardo detectado</h2><div class="sub">Selecciona motivo (obligatorio):</div>'+
-    rs.map(function(r){return '<div class="row"><button class="btn" data-r="'+r+'">'+r+'</button></div>';}).join('')+
-    '<div class="row"><button class="btn btn-red" data-r="CANCEL">Cancelar</button></div></div>';
-  ov.onclick=function(e){const r=e.target.dataset&&e.target.dataset.r;if(!r)return;ov.remove();if(r==='CANCEL'){rej();}else{res(r);}};
-  document.body.appendChild(ov);});}
-
-/* ══════════════════ ADAPTADOR DEMO (datos en memoria) ══════════════════ */
-const DemoAdapter=(function(){
-  let uid=null, seq=1;
-  const users=[
-    {uid:'u_admin',name:'Luis Puentes',email:'admin@demo.com',role:'admin',employeeCode:'EMP-001'},
-    {uid:'u_osle',name:'Osledy Avila',email:'osledy@demo.com',role:'operator',employeeCode:'EMP-002'},
-    {uid:'u_fer',name:'Fernanda Montañez',email:'fernanda@demo.com',role:'supervisor',employeeCode:'EMP-003'}];
-  const att=new Map(); const tasks=[]; const L={auth:[],today:[],blocks:[],tasks:[]};
-  const emit=function(){Object.keys(L).forEach(function(k){L[k].forEach(function(f){f();});});};
-  const t=todayStr();
-  att.set(t+'_u_fer',{employeeUid:'u_fer',userName:'Fernanda Montañez',date:t,status:'open',totalMinutes:0,dailyTags:[],
-    checkIn:{local:'07:58',status:'normal'},blocks:[{activity:'Supervisión de sala',localStart:'07:58',localEnd:null,minutes:null,status:'normal'}]});
-  tasks.push({id:'t'+(seq++),title:'Ingreso de solicitudes',category:'📋 Solicitudes',assignedTo:'u_osle',assignedName:'Osledy Avila',status:'pending',isEphemeral:false,tags:['#Solicitudes'],priority:'normal',dueDate:null,completedAtTS:null},
-    {id:'t'+(seq++),title:'Reporte de incidencias del día',category:'👔 Supervisión',assignedTo:'u_fer',assignedName:'Fernanda Montañez',status:'in_progress',isEphemeral:true,tags:['#Urgente'],priority:'high',dueDate:t,completedAtTS:null});
-  const myDoc=function(){return att.get(t+'_'+uid);};
-  const liveMin=function(b){return b.minutes!=null?b.minutes:Math.max(0,hmMin(nowHM())-hmMin(b.localStart));};
-  const withLive=function(r){return Object.assign({},r,{blocks:r.blocks.map(function(b){return Object.assign({},b,{minutes:liveMin(b)});})});};
-  return{
-    onAuth:function(cb){const f=function(){cb(uid?Object.assign({uid:uid},users.find(function(u){return u.uid===uid;})):null);};L.auth.push(f);f();},
-    login:function(email){return new Promise(function(res){let u=users.find(function(x){return x.email===email;});
-      if(!u){u={uid:'u_'+(seq++),name:email.split('@')[0],email:email,role:'operator',employeeCode:null};users.push(u);}
-      uid=u.uid;emit();res();});},
-    register:function(n,e){return new Promise(function(res){uid='u_'+(seq++);users.push({uid:uid,name:n,email:e,role:'operator',employeeCode:null});emit();res();});},
-    logout:function(){uid=null;emit();return Promise.resolve();},
-    getUsers:function(){return Promise.resolve(users);},
-    subscribeToday:function(cb){const f=function(){cb([...att.values()].filter(function(r){return r.date===t;}).map(withLive));};L.today.push(f);f();
-      return function(){L.today=L.today.filter(function(x){return x!==f;});};},
-    subscribeMyBlocks:function(cb){const f=function(){cb((myDoc()?myDoc().blocks:[]).map(function(b){return Object.assign({},b,{minutes:liveMin(b)});}));};L.blocks.push(f);f();
-      return function(){L.blocks=L.blocks.filter(function(x){return x!==f;});};},
-    checkIn:function(act,just){const hm=nowHM();
-      if(isLate(hm)&&!just)return Promise.resolve({needsJustification:true});
-      const d=myDoc();if(d)return Promise.resolve({already:true});
-      const late=isLate(hm);
-      att.set(t+'_'+uid,{employeeUid:uid,userName:users.find(function(u){return u.uid===uid;}).name,date:t,status:'open',totalMinutes:0,dailyTags:[],
-        checkIn:{local:hm,status:late?'late':'normal',justification:just||null},
-        blocks:[{activity:act||null,localStart:hm,localEnd:null,minutes:null,status:late?'late':'normal',justification:just||null}]});
-      emit();return Promise.resolve({});},
-    switchActivity:function(act,just){const d=myDoc();if(!d)return this.checkIn(act,just);
-      if(d.status!=='open')return Promise.resolve({already:true});
-      const open=d.blocks.find(function(b){return !b.localEnd;});
-      if(open){open.localEnd=nowHM();open.minutes=liveMin(open);}
-      d.blocks.push({activity:act,localStart:nowHM(),localEnd:null,minutes:null,status:'normal'});emit();return Promise.resolve({});},
-    checkOut:function(){const d=myDoc();if(!d||d.status!=='open')return Promise.resolve({none:true});
-      const open=d.blocks.find(function(b){return !b.localEnd;});
-      if(open){open.localEnd=nowHM();open.minutes=liveMin(open);}
-      d.checkOut={local:nowHM()};d.totalMinutes=d.blocks.reduce(function(a,b){return a+b.minutes;},0);d.status='completed';emit();return Promise.resolve({});},
-    createTask:function(x){tasks.push(Object.assign({id:'t'+(seq++),completedAtTS:null},x));emit();return Promise.resolve();},
-    subscribeTasks:function(cb){const f=function(){cb(tasks.map(function(x){return Object.assign({},x);}));};L.tasks.push(f);f();
-      return function(){L.tasks=L.tasks.filter(function(x){return x!==f;});};},
-    taskAction:function(id,a){const x=tasks.find(function(k){return k.id===id;});if(!x)return Promise.resolve();
-      if(a==='start')x.status='in_progress';
-      if(a==='finish'){x.status='awaiting_validation';x.completedAtTS=new Date();}
-      if(a==='validate')x.status='completed';emit();return Promise.resolve();},
-    manualHistory:function(o){const key=o.date+'_'+o.uid;let d=att.get(key);
-      if(!d){d={employeeUid:o.uid,userName:(users.find(function(u){return u.uid===o.uid;})||{}).name,date:o.date,status:'completed_manual',totalMinutes:0,dailyTags:[],blocks:[]};att.set(key,d);}
-      const mins=hmMin(o.ho)-hmMin(o.hi);
-      d.blocks.push({activity:o.activity,localStart:o.hi,localEnd:o.ho,minutes:mins,status:'manual'});
-      d.totalMinutes+=mins;emit();return Promise.resolve();},
-    forceClose:function(u){const d=att.get(t+'_'+u);if(!d)return Promise.resolve();
-      const open=d.blocks.find(function(b){return !b.localEnd;});
-      if(open){open.localEnd=nowHM();open.minutes=liveMin(open);}
-      d.checkOut={local:nowHM()};d.status='forced_close';d.totalMinutes=d.blocks.reduce(function(a,b){return a+b.minutes;},0);emit();return Promise.resolve();},
-    getMonthly:function(p){const m={};[...att.values()].filter(function(r){return r.date.indexOf(p)===0;}).forEach(function(r){
-      const k=r.employeeUid;m[k]=m[k]||{employeeCode:(users.find(function(u){return u.uid===k;})||{}).employeeCode||'SIN_CODIGO',userName:r.userName,workDays:0,totalHours:0,incompleteDays:0,lateCount:0};
-      m[k].workDays++;m[k].totalHours=Math.round((m[k].totalHours+(r.totalMinutes||0)/60)*100)/100;
-      if(r.checkIn&&r.checkIn.status==='late')m[k].lateCount++;});
-      return Promise.resolve(Object.values(m));},
-    getAll:function(){return Promise.resolve([...att.values()]);}
-  };})();
-
-/* ══════════════════ ADAPTADOR REAL (Firestore) ══════════════════ */
-const RealAdapter=(function(){
-  let PROFILE=null;
-  const attRef=function(d,u){return db.collection('attendance').doc(d+'_'+u);};
-  return{
-    onAuth:function(cb){auth.onAuthStateChanged(async function(u){if(!u){PROFILE=null;return cb(null);}
-      const s=await db.collection('users').doc(u.uid).get();PROFILE=Object.assign({uid:u.uid},s.data());
-      const c=await db.collection('meta').doc('config').get();if(c.exists)CONFIG=Object.assign({},CONFIG,c.data());
-      cb(PROFILE);});},
-    login:function(e,p){return auth.signInWithEmailAndPassword(e,p);},
-    register:async function(n,e,p){const c=await auth.createUserWithEmailAndPassword(e,p);
-      await db.collection('users').doc(c.user.uid).set({name:n,email:e,role:'operator',createdAt:FV.serverTimestamp(),
-        schedule:CONFIG.defaultSchedule,timezone:CONFIG.timezone,isActive:true,employeeCode:null},{merge:true});},
-    logout:function(){return auth.signOut();},
-    getUsers:async function(){return (await db.collection('users').get()).docs.map(function(d){return Object.assign({uid:d.id},d.data());});},
-    subscribeToday:function(cb){return db.collection('attendance').where('date','==',todayStr()).onSnapshot(function(s){cb(s.docs.map(function(d){return d.data();}));});},
-    subscribeMyBlocks:function(cb){return attRef(todayStr(),PROFILE.uid).collection('timeBlocks').orderBy('startTime').onSnapshot(function(s){cb(s.docs.map(function(d){return d.data();}));});},
-    checkIn:async function(act,just){const hm=nowHM();
-      if(isLate(hm)&&!just)return{needsJustification:true};
-      const ref=attRef(todayStr(),PROFILE.uid);const ex=await ref.get();
-      if(ex.exists)return{already:true};
-      const late=isLate(hm);
-      await ref.collection('timeBlocks').doc().set({activity:act||null,startTime:FV.serverTimestamp(),localStart:hm,
-        endTime:null,localEnd:null,minutes:null,status:late?'late':'normal',justification:just||null});
-      await ref.set({employeeUid:PROFILE.uid,userName:PROFILE.name,date:todayStr(),status:'open',dailyTags:[],
-        checkIn:{timestamp:FV.serverTimestamp(),local:hm,status:late?'late':'normal',justification:just||null}},{merge:true});return{};},
-    switchActivity:async function(act,just){const ref=attRef(todayStr(),PROFILE.uid);const ex=await ref.get();
-      if(!ex.exists)return this.checkIn(act,just);
-      const s=await ref.collection('timeBlocks').where('endTime','==',null).limit(1).get();
-      if(!s.empty){const hm=nowHM();const d=s.docs[0];
-        await d.ref.update({endTime:FV.serverTimestamp(),localEnd:hm,minutes:Math.max(0,hmMin(hm)-hmMin(d.data().localStart))});}
-      await ref.collection('timeBlocks').doc().set({activity:act,startTime:FV.serverTimestamp(),localStart:nowHM(),
-        endTime:null,localEnd:null,minutes:null,status:'normal',justification:null});return{};},
-    checkOut:async function(){const ref=attRef(todayStr(),PROFILE.uid);
-      const s=await ref.collection('timeBlocks').where('endTime','==',null).limit(1).get();
-      if(s.empty)return{none:true};
-      const hm=nowHM();const d=s.docs[0];
-      await d.ref.update({endTime:FV.serverTimestamp(),localEnd:hm,minutes:Math.max(0,hmMin(hm)-hmMin(d.data().localStart))});
-      const bl=await ref.collection('timeBlocks').get();
-      const total=bl.docs.reduce(function(a,b){return a+(b.data().minutes||0);},0);
-      const bnd=dayBounds(todayStr());
-      const tk=await db.collection('tasks').where('assignedTo','==',PROFILE.uid)
-        .where('completedAtTS','>=',bnd.start).where('completedAtTS','<=',bnd.end).get();
-      const tags=[...new Set(tk.docs.flatMap(function(x){return x.data().tags||[];}))];
-      await ref.set({checkOut:{timestamp:FV.serverTimestamp(),local:hm},totalMinutes:total,status:'completed',dailyTags:tags},{merge:true});return{};},
-    createTask:function(x){return db.collection('tasks').add(Object.assign({},x,{createdAt:FV.serverTimestamp(),
-      startedAtTS:null,completedAtTS:null,awaitingValidation:false,validationNotes:null}));},
-    subscribeTasks:function(cb){return db.collection('tasks').onSnapshot(function(s){cb(s.docs.map(function(d){return Object.assign({id:d.id},d.data());}));});},
-    taskAction:async function(id,a){const r=db.collection('tasks').doc(id);
-      if(a==='start')await r.update({status:'in_progress',startedAt:Date.now(),startedAtTS:FV.serverTimestamp()});
-      if(a==='finish')await r.update({status:'awaiting_validation',awaitingValidation:true,completedAt:Date.now(),completedAtTS:FV.serverTimestamp()});
-      if(a==='validate')await r.update({status:'completed',awaitingValidation:false,validationNotes:'validada por '+PROFILE.name});},
-    manualHistory:async function(o){const ref=attRef(o.date,o.uid);const mins=hmMin(o.ho)-hmMin(o.hi);
-      const name=(await db.collection('users').doc(o.uid).get()).data().name;
-      await ref.collection('timeBlocks').doc().set({activity:o.activity,localStart:o.hi,localEnd:o.ho,minutes:mins,
-        startTime:TS.fromDate(new Date(o.date+'T'+o.hi+':00-04:00')),endTime:TS.fromDate(new Date(o.date+'T'+o.ho+':00-04:00')),
-        status:'manual',supervisorOverride:{by:PROFILE.uid,at:FV.serverTimestamp(),reason:'registro_manual'}});
-      await ref.set({employeeUid:o.uid,userName:name,date:o.date,totalMinutes:FV.increment(mins)},{merge:true});},
-    forceClose:async function(u){const ref=attRef(todayStr(),u);
-      const s=await ref.collection('timeBlocks').where('endTime','==',null).limit(1).get();
-      if(!s.empty){const hm=nowHM();const d=s.docs[0];
-        await d.ref.update({endTime:FV.serverTimestamp(),localEnd:hm,minutes:Math.max(0,hmMin(hm)-hmMin(d.data().localStart))});}
-      const bl=await ref.collection('timeBlocks').get();
-      await ref.set({checkOut:{timestamp:FV.serverTimestamp(),local:nowHM()},status:'forced_close',
-        totalMinutes:bl.docs.reduce(function(a,b){return a+(b.data().minutes||0);},0),
-        supervisorOverride:{by:PROFILE.uid,at:FV.serverTimestamp(),reason:'cierre_forzoso'}},{merge:true});},
-    getMonthly:async function(p){const c=await db.collection('rrhhMonthlyCache').where('period','==',p).get();
-      if(!c.empty)return c.docs.map(function(d){return d.data();});
-      const s=await db.collection('attendance').where('date','>=',p+'-01').where('date','<=',p+'-31').get();
-      const m={};s.docs.forEach(function(d){const r=d.data();m[r.employeeUid]=m[r.employeeUid]||{employeeCode:r.employeeCode||'SIN_CODIGO',userName:r.userName,workDays:0,totalHours:0,incompleteDays:0,lateCount:0};
-        m[r.employeeUid].workDays++;m[r.employeeUid].totalHours=Math.round((m[r.employeeUid].totalHours+(r.totalMinutes||0)/60)*100)/100;
-        if(r.checkIn&&r.checkIn.status==='late')m[r.employeeUid].lateCount++;if(r.status==='incomplete_legacy')m[r.employeeUid].incompleteDays++;});
-      return Object.values(m);},
-    getAll:async function(){return (await db.collection('attendance').get()).docs.map(function(d){return d.data();});}
-  };})();
-
-const DS=DEMO?DemoAdapter:RealAdapter;
-let PROFILE=null, isSupervisor=false, unsubs=[];
-
-/* ══════════════════ UI / NAVEGACIÓN ══════════════════ */
-function showView(v){document.querySelectorAll('#view-app section.view').forEach(function(s){s.classList.toggle('active',s.id==='view-'+v);});}
-document.querySelectorAll('nav [data-view]').forEach(function(b){b.onclick=function(){showView(b.dataset.view);};});
-el('goRegister').onclick=function(){el('loginForm').style.display='none';el('registerForm').style.display='block';};
-el('goLogin').onclick=function(){el('loginForm').style.display='block';el('registerForm').style.display='none';};
-if(DEMO){el('demoBanner').style.display='block';el('demoHint').textContent='DEMO: admin@demo.com / osledy@demo.com / fernanda@demo.com (cualquier contraseña)';}
-
-el('btnLogin').onclick=async function(){try{await DS.login(el('loginEmail').value,el('loginPassword').value);}catch(e){toast('❌ '+e.message);}};
-el('btnRegister').onclick=async function(){try{await DS.register(el('regName').value,el('regEmail').value,el('regPassword').value);}catch(e){toast('❌ '+e.message);}};
-el('btnLogout').onclick=function(){DS.logout();};
-
-/* ══════════════════ RENDERERS ══════════════════ */
-function rowMinutes(r){
-  if(r.blocks&&r.blocks.length)return r.blocks.reduce(function(a,b){return a+(b.minutes||0);},0);
-  if(r.status==='open'&&r.checkIn&&r.checkIn.local)return Math.max(0,hmMin(nowHM())-hmMin(r.checkIn.local));
-  return r.totalMinutes||0;
-}
-function renderJornada(rows){
-  el('jornadaBody').innerHTML=rows.map(function(r){
-    const st=r.status==='open'?(r.checkIn&&r.checkIn.status==='late'?'<span class="badge b-amber">🟠 En oficina (retardo)</span>':'<span class="badge b-green">🟢 En oficina</span>')
-      :r.status==='forced_close'?'<span class="badge b-red">⛔ Cierre forzado</span>':'<span class="badge b-gray">⚪ Retirado</span>';
-    const acc=(isSupervisor&&r.status==='open')?'<button class="btn btn-red" onclick="DS.forceClose(\''+r.employeeUid+'\')">Forzar cierre</button>':'';
-    return '<tr><td>'+esc(r.userName)+'</td><td>'+st+'</td><td>'+esc(r.checkIn?r.checkIn.local:'--:--')+'</td><td>'+acc+'</td></tr>';}).join('')||'<tr><td colspan="4" class="sub">Sin personal hoy</td></tr>';
-  el('statActive').textContent=rows.filter(function(r){return r.status==='open';}).length;
-  el('hoursPerPerson').innerHTML=rows.map(function(r){return '<div class="row" style="margin:2px 0"><span>'+esc(r.userName)+'</span><b style="color:var(--green)">'+(rowMinutes(r)/60).toFixed(2)+'h</b></div>';}).join('')||'Sin datos';
-  const mine=rows.find(function(r){return r.employeeUid===PROFILE.uid;});
-  el('estadoOficina').innerHTML=(mine&&mine.status==='open')?'🏃♂️ Estás en la oficina':'⬜ Fuera de la oficina';
-  el('estadoOficina').className='badge '+((mine&&mine.status==='open')?'b-green':'b-gray');
-  el('horaEntrada').textContent=(mine&&mine.checkIn)?mine.checkIn.local:'--:--';
-}
-function renderHistorial(blocks){
-  el('historialHoyBody').innerHTML=blocks.map(function(b){return '<tr><td>'+esc(b.activity||'—')+'</td><td>'+esc(b.localStart)+'</td><td>'+esc(b.localEnd||'en curso...')+'</td><td>'+((b.minutes||0)/60).toFixed(2)+'</td></tr>';}).join('')||'<tr><td colspan="4">Sin registros hoy</td></tr>';
-}
-function renderTasks(tasks){
-  el('statPending').textContent=tasks.filter(function(t){return ['pending','in_progress'].indexOf(t.status)>=0;}).length;
-  const bnd=dayBounds(todayStr());
-  el('statDone').textContent=tasks.filter(function(t){return t.completedAtTS&&((t.completedAtTS.toDate?t.completedAtTS.toDate():new Date(t.completedAtTS))>=bnd.start);}).length;
-  const counts={};tasks.forEach(function(t){counts[t.status]=(counts[t.status]||0)+1;});
-  const max=Math.max.apply(null,[1].concat(Object.values(counts)));
-  el('taskStatus').innerHTML=Object.keys(counts).map(function(k){return '<div class="sub">'+k+' ('+counts[k]+')</div><div class="bar"><i style="width:'+(counts[k]/max*100)+'%"></i></div>';}).join('')||'Sin tareas';
-  const badgeMap={'pending':'b-cyan','in_progress':'b-amber','awaiting_validation':'b-mag','completed':'b-green','expired':'b-red'};
-  el('teamTasks').innerHTML='<table><tr><th>Tarea</th><th>Asignado</th><th>Tags</th><th>Estado</th><th>Acción</th></tr>'+
-    tasks.map(function(t){let acc='';
-      if(t.status==='pending'&&t.assignedTo===PROFILE.uid)acc='<button class="btn btn-green" onclick="DS.taskAction(\''+t.id+'\',\'start\')">Iniciar</button>';
-      if(t.status==='in_progress'&&t.assignedTo===PROFILE.uid)acc='<button class="btn" onclick="DS.taskAction(\''+t.id+'\',\'finish\')">Terminar</button>';
-      if(t.status==='awaiting_validation'&&isSupervisor)acc='<button class="btn btn-mag" onclick="DS.taskAction(\''+t.id+'\',\'validate\')">Validar</button>';
-      return '<tr><td>'+esc(t.title)+(t.isEphemeral?' <span class="badge b-red">⚡ 1 día</span>':'')+'</td><td>'+esc(t.assignedName)+
-        '</td><td>'+(t.tags||[]).map(function(x){return '<span class="chip">'+esc(x)+'</span>';}).join('')+'</td><td><span class="badge '+(badgeMap[t.status]||'b-gray')+'">'+t.status+'</span></td><td>'+acc+'</td></tr>';}).join('')+'</table>';
-  el('activityFeed').innerHTML=tasks.slice(-6).reverse().map(function(t){return '<div class="sub">📌 '+esc(t.title)+' → '+esc(t.assignedName)+' ['+t.status+']</div>';}).join('')||'Cargando actividad...';
-}
-
-/* ══════════════════ ACCIONES UI ══════════════════ */
-async function doCheckIn(){
-  try{
-    let r=await DS.checkIn(el('inputActividad').value.trim(),null);
-    if(r.already)return toast('ℹ️ Ya tienes jornada registrada hoy');
-    if(r.needsJustification){
-      const j=await askJustification().catch(function(){return null;});
-      if(!j)return toast('⚠️ Entrada cancelada');
-      r=await DS.checkIn(el('inputActividad').value.trim(),j);
-      if(r.already)return toast('ℹ️ Ya tienes jornada registrada hoy');
-    }
-    toast('✅ Entrada registrada '+nowHM());
-  }catch(e){toast('❌ '+e.message);}
-}
-el('btnCheckIn').onclick=doCheckIn;
-el('btnRegistrarEntrada').onclick=async function(){
-  const a=el('inputActividad').value.trim();if(!a)return toast('Escribe la actividad');
-  let r=await DS.switchActivity(a,null);
-  if(r&&r.needsJustification){
-    const j=await askJustification().catch(function(){return null;});
-    if(!j)return toast('⚠️ Cancelado');
-    r=await DS.switchActivity(a,j);
-  }
-  toast('🔄 Actividad: '+a);};
-el('btnCheckOut').onclick=async function(){const r=await DS.checkOut();
-  if(r&&r.none)return toast('No hay jornada abierta');
-  toast('🛑 Salida registrada '+nowHM());};
-el('btnAssign').onclick=async function(){
-  const uid=el('taskAssign').value;if(!uid||!el('taskTitle').value)return toast('Completa título y operador');
-  const eph=el('taskEphemeral').checked;
-  const tags=el('taskTags').value.split(',').map(function(s){return '#'+s.trim().replace(/^#/,'');}).filter(Boolean);
-  await DS.createTask({title:el('taskTitle').value,category:el('taskCategory').value,assignedTo:uid,
-    assignedName:el('taskAssign').selectedOptions[0].text,createdBy:PROFILE.uid,status:'pending',
-    isEphemeral:eph,tags:tags,priority:eph?'high':'normal',dueDate:eph?todayStr():null});
-  toast('📌 Tarea asignada'+(eph?' (vence hoy)':''));};
-el('btnManualSave').onclick=async function(){
-  const o={uid:el('manualOperator').value,date:el('manualDate').value,hi:el('manualIn').value,ho:el('manualOut').value,activity:el('manualActivity').value};
-  if(!o.uid||!o.date||!o.hi||!o.ho)return toast('Completa todos los campos');
-  if(hmMin(o.ho)-hmMin(o.hi)<=0)return toast('Horario inválido');
-  await DS.manualHistory(o);toast('⏳ Registro histórico guardado');};
-
-/* ══════════════════ EXPORTES ══════════════════ */
-function downloadCSV(csv,name){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=name;a.click();}
-el('btnExportMonthly').onclick=async function(){const p=el('periodSelect').value;if(!p)return toast('Selecciona mes');
-  const rows=await DS.getMonthly(p);
-  let csv='employeeCode,empleado,diasLaborados,horasTotales,diasIncompletos,retardos\n';
-  rows.forEach(function(r){csv+=r.employeeCode+',"'+r.userName+'",'+r.workDays+','+r.totalHours+','+r.incompleteDays+','+r.lateCount+'\n';});
-  downloadCSV(csv,'asistencia_'+p+'.csv');toast('📥 Reporte '+p+' exportado');};
-el('btnExportCSV').onclick=async function(){const rows=await DS.getAll();
-  let csv='fecha,empleado,entrada,salida,horas,estado\n';
-  rows.forEach(function(r){csv+=r.date+',"'+r.userName+'",'+((r.checkIn&&r.checkIn.local)||'')+','+((r.checkOut&&r.checkOut.local)||'')+','+((r.totalMinutes||0)/60).toFixed(2)+','+r.status+'\n';});
-  downloadCSV(csv,'bitacora_completa.csv');toast('📊 Export completo listo');};
-el('btnExportPDF').onclick=function(){
-  const w=window.open('','_blank');
-  if(!w)return toast('⚠️ Habilita ventanas emergentes para exportar PDF');
-  const clone=el('view-dashboard').cloneNode(true);
-  w.document.write('<html><head><title>Dashboard '+todayStr()+'</title><style>'+
-    'body{font-family:monospace;color:#0a0a0a;padding:28px}'+
-    'h1,h2{color:#0077aa;letter-spacing:2px;text-transform:uppercase}'+
-    '.panel{border:1px solid #999;padding:14px;margin-bottom:14px}'+
-    '.sub{color:#555;font-size:12px}'+
-    '.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}'+
-    '.stat{border:1px solid #999;padding:10px;text-align:center}.stat b{display:block;font-size:24px}'+
-    '.bar{height:6px;background:#eee;margin:4px 0 10px}.bar i{display:block;height:100%;background:#0077aa}'+
-    '.row{display:flex;justify-content:space-between;font-size:13px;margin:3px 0}'+
-    'header{border-bottom:2px solid #000;margin-bottom:12px}'+
-    '</style></head><body>'+
-    '<header><h1>Bitácora PRO v2.1 — Dashboard</h1>'+
-    '<div class="sub">Generado: '+new Date().toLocaleString()+' (America/Caracas) | Emite: '+esc(PROFILE.name)+' ['+PROFILE.role+']</div></header>'+
-    clone.innerHTML+'</body></html>');
-  w.document.close();w.focus();
-  setTimeout(function(){w.print();},300);};
-
-/* ══════════════════ ARRANQUE ══════════════════ */
-el('periodSelect').value=todayStr().slice(0,7);
-DS.onAuth(async function(user){
-  unsubs.forEach(function(f){f();}); unsubs=[];
-  if(!user){PROFILE=null;isSupervisor=false;
-    el('view-login').classList.add('active');el('view-app').classList.remove('active');return;}
-  PROFILE=user;isSupervisor=['admin','supervisor'].indexOf(user.role)>=0;
-  el('userBadge').textContent=user.name+' ['+user.role+']';
-  el('view-login').classList.remove('active');el('view-app').classList.add('active');
-  const users=await DS.getUsers();
-  el('taskAssign').innerHTML=users.map(function(u){return '<option value="'+u.uid+'">'+esc(u.name)+'</option>';}).join('');
-  el('manualOperator').innerHTML=users.map(function(u){return '<option value="'+u.uid+'">'+esc(u.name)+'</option>';}).join('');
-  unsubs=[DS.subscribeToday(renderJornada),DS.subscribeMyBlocks(renderHistorial),DS.subscribeTasks(renderTasks)];
-});
-</script>
+<script src="js/app.js"></script>
 </body>
 </html>
