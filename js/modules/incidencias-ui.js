@@ -7,16 +7,39 @@ window.Bitacora=window.Bitacora||{};
   const labels={open:'Abierta',in_progress:'En atención',resolved:'Resuelta'};
   const priority={high:'Alta',medium:'Media',low:'Baja'};
   function initials(name){return String(name||'I').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase()}
+  function dateTime(v){
+    if(!v)return '';
+    const d=v instanceof Date?v:new Date(v);
+    if(Number.isNaN(d.getTime()))return '';
+    return new Intl.DateTimeFormat('es-VE',{timeZone:'America/Caracas',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(d);
+  }
+  function age(v){
+    if(!v)return '';
+    const d=v instanceof Date?v:new Date(v),diff=Math.max(0,Date.now()-d.getTime());
+    const mins=Math.floor(diff/60000);
+    if(mins<60)return 'Hace '+mins+' min';
+    const hours=Math.floor(mins/60);
+    if(hours<24)return 'Hace '+hours+' h';
+    return 'Hace '+Math.floor(hours/24)+' d';
+  }
   function render(){
-    const box=el('incidentsList'), filter=el('incidentStatusFilter');
+    const box=el('incidentsList'), filter=el('incidentStatusFilter'), pf=el('incidentPriorityFilter');
     if(!box)return;
-    const rows=state.rows.filter(x=>!filter.value||x.status===filter.value);
-    el('incidentsCounter').textContent=state.rows.filter(x=>x.status!=='resolved').length+' abiertas';
-    if(!rows.length){box.innerHTML='<div class="empty-state">No hay incidencias para el filtro seleccionado.</div>';return}
+    const rows=state.rows.filter(x=>(!filter.value||x.status===filter.value)&&(!pf||!pf.value||x.priority===pf.value));
+    const open=state.rows.filter(x=>x.status==='open').length;
+    const attention=state.rows.filter(x=>x.status==='in_progress').length;
+    const resolved=state.rows.filter(x=>x.status==='resolved').length;
+    const counter=el('incidentsCounter'); if(counter)counter.textContent=(open+attention)+' abiertas';
+    const a=el('incidentOpenCount'); if(a)a.textContent=open+' abiertas';
+    const b=el('incidentAttentionCount'); if(b)b.textContent=attention+' en atención';
+    const c=el('incidentResolvedCount'); if(c)c.textContent=resolved+' resueltas';
+    if(!rows.length){box.innerHTML='<div class="empty-state">No hay incidencias para los filtros seleccionados.</div>';return}
     box.innerHTML=rows.map(x=>{
       const next=x.status==='open'?'in_progress':x.status==='in_progress'?'resolved':null;
       const action=next?'<button class="btn btn-secondary incident-action" data-id="'+esc(x.id)+'" data-status="'+next+'">'+(next==='in_progress'?'Tomar en atención':'Marcar resuelta')+'</button>':'';
-      return '<article class="incident-card"><div class="incident-icon">'+initials(x.category)+'</div><div class="incident-main"><div class="incident-top"><strong>'+esc(x.title)+'</strong><span class="badge b-'+(x.priority==='high'?'red':x.priority==='medium'?'amber':'gray')+'">'+esc(priority[x.priority]||x.priority)+'</span></div><div class="incident-meta"><span>'+esc(x.category)+'</span><span>•</span><span>'+esc(labels[x.status]||x.status)+'</span><span>•</span><span>'+esc(x.assignedName||'Sin responsable')+'</span></div><p>'+esc(x.description||'Sin descripción')+'</p><div class="incident-actions">'+action+'</div></div></article>';
+      const resolvedClass=x.status==='resolved'?' incident-resolved':'';
+      const created=dateTime(x.createdAt);
+      return '<article class="incident-card'+resolvedClass+'"><div class="incident-icon '+esc(x.priority||'medium')+'">'+initials(x.category)+'</div><div class="incident-main"><div class="incident-top"><strong>'+esc(x.title)+'</strong><span class="badge b-'+(x.priority==='high'?'red':x.priority==='medium'?'amber':'gray')+'">'+esc(priority[x.priority]||x.priority)+'</span></div><div class="incident-meta"><span>'+esc(x.category)+'</span><span>•</span><span>'+esc(labels[x.status]||x.status)+'</span><span>•</span><span>'+esc(x.assignedName||'Sin responsable')+'</span><span>•</span><span class="incident-age">'+esc(age(x.createdAt))+'</span></div><p class="incident-description">'+esc(x.description||'Sin descripción')+'</p><div class="incident-actions">'+(created?'<span class="incident-age">Registrada '+esc(created)+'</span>':'')+action+'</div></div></article>';
     }).join('');
   }
   async function loadUsers(){
@@ -37,9 +60,10 @@ window.Bitacora=window.Bitacora||{};
   async function bind(){
     const service=B.services&&B.services.incidents;if(!service)return;
     if(state.stop)state.stop();
-    state.stop=service.subscribe(rows=>{state.rows=rows;render()});
+    state.stop=service.subscribe(rows=>{state.rows=rows||[];render()});
     const btn=el('btnCreateIncident');if(btn)btn.onclick=create;
     const filter=el('incidentStatusFilter');if(filter)filter.onchange=render;
+    const priorityFilter=el('incidentPriorityFilter');if(priorityFilter)priorityFilter.onchange=render;
     const list=el('incidentsList');
     if(list)list.addEventListener('click',async ev=>{
       const b=ev.target.closest('.incident-action');if(!b)return;
