@@ -1,0 +1,2 @@
+/* Bitácora PRO v3 - dashboard */
+window.Bitacora=window.Bitacora||{};(function(B){function el(id){return document.getElementById(id)}function esc(s){return B.utils.esc(s)}function bind(){const box=el('view-dashboard');if(!box)return;const refresh=()=>{const date=el('dashboardDate');if(date)date.textContent=B.utils.todayStr();};refresh();setInterval(refresh,60000);window.addEventListener('bitacora:session-changed',refresh)}window.addEventListener('bitacora:modules-ready',bind,{once:true})})(window.Bitacora);
