@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=20260918-3">
+<link rel="stylesheet" href="css/app.css?v=20260918-4">
 </head>
 <body>
 <div id="toastBox" aria-live="polite"></div>
@@ -30,6 +30,23 @@
     </div>
   </section>
 </main>
+
+<div id="lateModal" class="modal-backdrop" hidden>
+  <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="lateModalTitle">
+    <div class="modal-icon">!</div>
+    <div class="modal-copy">
+      <span class="eyebrow">JORNADA</span>
+      <h2 id="lateModalTitle">Retardo detectado</h2>
+      <p>Indica brevemente el motivo para registrar la entrada.</p>
+    </div>
+    <label for="lateReason">Motivo</label>
+    <textarea id="lateReason" rows="3" placeholder="Ej. inconveniente de transporte"></textarea>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="btnLateCancel">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnLateConfirm">Registrar entrada</button>
+    </div>
+  </section>
+</div>
 
 <div id="view-app" class="app-shell view">
   <aside class="sidebar">
