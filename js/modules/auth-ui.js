@@ -6,7 +6,7 @@ window.Bitacora = window.Bitacora || {};
 
   function setupDemoAdmin() {
     const hint = el('demoHint');
-    if (!hint || !B.firebase || !B.firebase.demo) return;
+    if (!hint || !B.BitacoraRuntimeAdapter) return;
 
     hint.innerHTML = '<button type="button" class="linklike demo-login" id="btnDemoAdmin">Entrar como Administrador DEMO</button><small>Vista completa del sistema. No modifica Firebase.</small>';
 
