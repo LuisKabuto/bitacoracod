@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css?v=20260918-6">
+<link rel="stylesheet" href="css/app.css?v=20260918-7">
 </head>
 <body>
 <div id="toastBox" aria-live="polite"></div>
@@ -74,7 +74,7 @@
           <label for="incidentDescription">Descripción</label><textarea id="incidentDescription" rows="4" placeholder="Describe brevemente lo ocurrido y las acciones necesarias."></textarea>
           <div class="form-actions"><button class="btn btn-primary" id="btnCreateIncident">Registrar incidencia</button></div>
         </div>
-        <div class="card"><div class="card-head"><div><h2>Seguimiento</h2><p>Incidencias registradas en esta sesión.</p></div><div class="employee-filters"><select id="incidentStatusFilter"><option value="">Todos los estados</option><option value="open">Abiertas</option><option value="in_progress">En atención</option><option value="resolved">Resueltas</option></select></div></div><div id="incidentsList" class="incident-list"><div class="empty-state">Cargando incidencias...</div></div></div>
+        <div class="card"><div class="card-head incident-head"><div><h2>Seguimiento</h2><p>Incidencias registradas en esta sesión.</p></div><div class="incident-tools"><div class="incident-counters"><span class="incident-counter open" id="incidentOpenCount">0 abiertas</span><span class="incident-counter attention" id="incidentAttentionCount">0 en atención</span><span class="incident-counter resolved" id="incidentResolvedCount">0 resueltas</span></div><div class="employee-filters"><select id="incidentStatusFilter"><option value="">Todos los estados</option><option value="open">Abiertas</option><option value="in_progress">En atención</option><option value="resolved">Resueltas</option></select><select id="incidentPriorityFilter"><option value="">Todas las prioridades</option><option value="high">Alta</option><option value="medium">Media</option><option value="low">Baja</option></select></div></div></div><div id="incidentsList" class="incident-list"><div class="empty-state">Cargando incidencias...</div></div></div>
       </section>
       <section class="view" id="view-reportes"><div class="page-head"><div><span class="eyebrow">INFORMACIÓN</span><h1>Reportes</h1><p>Exporta información para RRHH y auditoría.</p></div></div><div class="card form-card"><div class="card-head"><div><h2>Asistencia mensual</h2><p>Resumen de jornadas, horas y retardos.</p></div></div><div class="inline-form"><div class="field-grow"><label for="periodSelect">Período</label><input id="periodSelect" type="month"></div><button class="btn btn-primary" id="btnExportMonthly">Exportar asistencia</button></div></div><div class="card"><div class="card-head"><div><h2>Exportaciones generales</h2><p>Descarga los datos operativos disponibles.</p></div></div><div class="export-grid"><button class="export-item" id="btnExportCSV"><strong>CSV</strong><span>Bitácora completa</span></button><button class="export-item" id="btnExportPDF"><strong>PDF</strong><span>Dashboard actual</span></button></div></div></section>
     </div>
