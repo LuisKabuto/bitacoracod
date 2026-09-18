@@ -76,9 +76,12 @@ window.Bitacora=window.Bitacora||{};(function(B){
       try{const r=await a.checkOut();if(r&&r.none)return n('No hay jornada abierta');n('Salida registrada')}
       catch(e){n('Error: '+(e.message||'No fue posible registrar la salida'))}
     };
-    const unsubToday=a.subscribeToday(renderMine);
-    const unsubBlocks=a.subscribeMyBlocks(renderHistory);
-    B.jornadaUnsubscribe=()=>{if(unsubToday)unsubToday();if(unsubBlocks)unsubBlocks()};
+    let unsubToday=null,unsubBlocks=null;
+    function stopSubscriptions(){if(unsubToday){unsubToday();unsubToday=null}if(unsubBlocks){unsubBlocks();unsubBlocks=null}}
+    function startSubscriptions(){stopSubscriptions();if(!B.currentUser)return;unsubToday=a.subscribeToday(renderMine);unsubBlocks=a.subscribeMyBlocks(renderHistory)}
+    window.addEventListener('bitacora:session-changed',e=>{if(e.detail)startSubscriptions();else stopSubscriptions()});
+    startSubscriptions();
+    B.jornadaUnsubscribe=stopSubscriptions;
   }
   window.addEventListener('bitacora:modules-ready',bind,{once:true})
 })(window.Bitacora);
