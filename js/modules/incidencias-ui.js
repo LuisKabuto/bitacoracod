@@ -1,7 +1,7 @@
 /* Bitácora PRO v3 - interfaz de incidencias */
 window.Bitacora=window.Bitacora||{};
 (function(B){
-  const state={rows:[],stop:null};
+  const state={rows:[],stop:null,timer:null};
   const el=id=>document.getElementById(id);
   const esc=s=>B.utils.esc(s);
   const labels={open:'Abierta',in_progress:'En atención',resolved:'Resuelta'};
@@ -69,7 +69,7 @@ window.Bitacora=window.Bitacora||{};
       const b=ev.target.closest('.incident-action');if(!b)return;
       try{await service.update(b.dataset.id,b.dataset.status);B.notify(b.dataset.status==='resolved'?'Incidencia resuelta':'Incidencia tomada en atención')}catch(e){B.notify('Error: '+(e.message||'No fue posible actualizar la incidencia'))}
     });
-    await loadUsers();
+    await loadUsers();\n    if(state.timer)clearInterval(state.timer);\n    state.timer=setInterval(()=>{if(state.rows.length)render()},60000);
     const nav=document.querySelector('.nav-item[data-view="incidencias"]');
     if(nav)nav.onclick=()=>{document.querySelectorAll('#view-app section.view').forEach(s=>s.classList.toggle('active',s.id==='view-incidencias'));document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view==='incidencias'));el('pageTitle').textContent='Incidencias';el('pageSubtitle').textContent='Registro y seguimiento operativo';render()};
     window.addEventListener('bitacora:session-changed',loadUsers);
