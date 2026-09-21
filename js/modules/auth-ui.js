@@ -5,6 +5,7 @@ window.Bitacora = window.Bitacora || {};
   function notify(message) { if (typeof B.notify === 'function') B.notify(message); else if (typeof toast === 'function') toast(message); }
 
   function setupDemoAdmin() {
+    if (typeof DEMO !== 'undefined' && !DEMO) return;
     const hint = el('demoHint');
     if (!hint || !B.BitacoraRuntimeAdapter) return;
 
