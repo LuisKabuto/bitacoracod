@@ -19,13 +19,14 @@ window.Bitacora.services = window.Bitacora.services || {};
     const usersById={},usersByName={};
     usersSnap.docs.forEach(d=>{const u=d.data()||{};usersById[d.id]=u;if(u.name)usersByName[String(u.name).trim().toLowerCase()]=u});
     const rows={};
+    const employeeCodeOf=(r,u)=>r.employeeCode||r.code||r.codigo||r.employee_code||u.employeeCode||u.code||u.codigo||u.employee_code||u.employeeId||u.employeeID||'SIN_CODIGO';
     snap.docs.forEach(doc=>{
       const r=doc.data()||{};
       const rawDate=String(r.date||'').trim();
       if(rawDate.slice(0,7)!==period)return;
       const key=r.userId||r.userName||doc.id;
       const u=usersById[r.userId]||usersByName[String(r.userName||'').trim().toLowerCase()]||{};
-      rows[key]=rows[key]||{employeeCode:r.employeeCode||u.employeeCode||'SIN_CODIGO',userName:r.userName||u.name||'Sin nombre',workDays:0,totalHours:0,incompleteDays:0,lateCount:0};
+      rows[key]=rows[key]||{employeeCode:employeeCodeOf(r,u),userName:r.userName||u.name||'Sin nombre',workDays:0,totalHours:0,incompleteDays:0,lateCount:0};
       rows[key].workDays++;
       let h=Number(r.hours||0);
       if(!h)h=hoursBetween(r.checkIn,r.checkOut);
