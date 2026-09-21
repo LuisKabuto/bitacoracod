@@ -13,11 +13,13 @@ window.Bitacora.services = window.Bitacora.services || {};
   };
   const aggregateEntries=async period=>{
     const nextPeriod=(()=>{const [y,m]=period.split('-').map(Number);const d=new Date(y,m,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')})()
-    const snap=await firebase.firestore().collection('entries').where('date','>=',period+'-01').where('date','<',nextPeriod+'-01').get();
+    let snap=await firebase.firestore().collection('entries').where('date','>=',period+'-01').where('date','<',nextPeriod+'-01').get();
+    if(snap.empty)snap=await firebase.firestore().collection('entries').get();
     const rows={};
     snap.docs.forEach(doc=>{
       const r=doc.data()||{};
-      if(String(r.date||'').slice(0,7)!==period)return;
+      const rawDate=String(r.date||'').trim();
+      if(rawDate.slice(0,7)!==period)return;
       const key=r.userId||r.userName||doc.id;
       rows[key]=rows[key]||{employeeCode:r.employeeCode||'SIN_CODIGO',userName:r.userName||'Sin nombre',workDays:0,totalHours:0,incompleteDays:0,lateCount:0};
       rows[key].workDays++;
