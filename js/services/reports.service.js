@@ -5,6 +5,17 @@ window.Bitacora.services = window.Bitacora.services || {};
   const isDemo=()=>typeof DEMO!=='undefined'&&DEMO;
   const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Caracas',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const hmMin=hm=>{const p=String(hm||'').split(':').map(Number);return (p[0]||0)*60+(p[1]||0)};
+  const sequentialCodes={
+    'luis puentes':'EMP-001','osledy avila':'EMP-002','fernanda montañez':'EMP-003','asser de oliveira':'EMP-004',
+    'lesamir colmenares':'EMP-005','edwar vielma':'EMP-006','maryori sanchez':'EMP-007','carlos malpica':'EMP-008',
+    'mileska ocando':'EMP-009','jaime gaviria':'EMP-010'
+  };
+  async function ensureEmployeeCodes(){
+    if(!B.currentUser||B.currentUser.role!=='admin'||(typeof DEMO!=='undefined'&&DEMO))return;
+    const db=firebase.firestore(),snap=await db.collection('users').get(),batch=db.batch();let changed=false;
+    snap.docs.forEach(d=>{const u=d.data()||{},code=sequentialCodes[String(u.name||'').trim().toLowerCase()];if(code&&u.employeeCode!==code){batch.update(d.ref,{employeeCode:code});changed=true}});
+    if(changed)await batch.commit();
+  }
   const hoursBetween=(a,b)=>{
     if(!a||!b)return 0;
     const d1=new Date(a),d2=new Date(b);
@@ -37,6 +48,7 @@ window.Bitacora.services = window.Bitacora.services || {};
     return Object.values(rows);
   };
   async function monthlyProduction(period){
+    await ensureEmployeeCodes();
     const historical=await aggregateEntries(period);
     if(historical.length)return historical;
     const cacheSnap=await firebase.firestore().collection('rrhhMonthlyCache').where('period','==',period).get();
