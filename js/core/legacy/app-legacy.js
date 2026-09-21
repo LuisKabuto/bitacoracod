@@ -1,5 +1,5 @@
 /* Bitácora PRO v3 - application logic. Data adapters preserve the existing Firebase/DEMO behavior. */
-const firebaseConfig={apiKey:"",authDomain:"",projectId:"",storageBucket:"",messagingSenderId:"",appId:""};
+const firebaseConfig={apiKey:"AIzaSyDS5mI8CUy97EzcX9D5y-1k8fRZFT88lSg",authDomain:"bitacoracod.firebaseapp.com",databaseURL:"https://bitacoracod-default-rtdb.firebaseio.com",projectId:"bitacoracod",storageBucket:"bitacoracod.firebasestorage.app",messagingSenderId:"203746601327",appId:"1:203746601327:web:21c62179fad0f44fe3e09a"};
 const DEMO=!firebaseConfig.apiKey;let auth=null,db=null,FV=null,TS=null;
 if(!DEMO){firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.firestore();FV=firebase.firestore.FieldValue;TS=firebase.firestore.Timestamp;}
 let CONFIG={timezone:'America/Caracas',defaultSchedule:{start:'08:00',end:'15:00'},lateToleranceMinutes:10};
