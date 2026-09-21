@@ -19,7 +19,13 @@ window.Bitacora.services = window.Bitacora.services || {};
   const hoursBetween=(a,b)=>{
     if(!a||!b)return 0;
     const d1=new Date(a),d2=new Date(b);
-    if(!isNaN(d1)&&!isNaN(d2))return Math.max(0,(d2-d1)/3600000);
+    if(!isNaN(d1)&&!isNaN(d2)){
+      const date1=String(a).slice(0,10),date2=String(b).slice(0,10);
+      if(date1!==date2)return 0;
+      return Math.max(0,(d2-d1)/3600000);
+    }
+    const aDate=String(a).slice(0,10),bDate=String(b).slice(0,10);
+    if(aDate&&bDate&&aDate!==bDate)return 0;
     return Math.max(0,(hmMin(b)-hmMin(a))/60);
   };
   const aggregateEntries=async period=>{
@@ -44,7 +50,7 @@ window.Bitacora.services = window.Bitacora.services || {};
       else if((r.checkIn||r.checkOut)==null&&Number.isFinite(Number(r.hours)))h=Math.max(0,Number(r.hours));
       rows[key].totalHours=Math.round((rows[key].totalHours+h)*100)/100;
       if(r.status==='late'||(r.checkIn&&typeof r.checkIn==='string'&&r.checkIn.toLowerCase().includes('late')))rows[key].lateCount++;
-      if(!r.checkOut)rows[key].incompleteDays++;
+      if(!r.checkOut||(!hoursBetween(r.checkIn,r.checkOut)&&r.checkIn&&r.checkOut&&String(r.checkIn).slice(0,10)!==String(r.checkOut).slice(0,10)))rows[key].incompleteDays++;
     });
     return Object.values(rows);
   };
