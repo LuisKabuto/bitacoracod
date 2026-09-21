@@ -76,8 +76,29 @@ window.Bitacora.services = window.Bitacora.services || {};
     }
     return Object.values(out);
   }
+  async function diagnoseEntries(period){
+    const snap=await firebase.firestore().collection('entries').get();
+    const records=[];
+    snap.docs.forEach(doc=>{
+      const r=doc.data()||{},date=String(r.date||'').slice(0,10);
+      if(date.slice(0,7)!==period)return;
+      const checkIn=r.checkIn||'',checkOut=r.checkOut||'';
+      let calculated=0;
+      if(checkIn&&checkOut){
+        calculated=hoursBetween(checkIn,checkOut);
+      }
+      records.push({
+        id:doc.id,date,userName:r.userName||'Sin nombre',activity:r.activity||'',
+        checkIn,checkOut,storedHours:Number(r.hours||0),calculatedHours:Number(calculated.toFixed(2)),
+        status:r.status||'',userId:r.userId||''
+      });
+    });
+    records.sort((a,b)=>a.date.localeCompare(b.date)||a.userName.localeCompare(b.userName));
+    return {period,total:records.length,records};
+  }
   B.services.reports={
     monthly:period=>isDemo()?B.BitacoraRuntimeAdapter.getMonthly(period):monthlyProduction(period),
-    all:()=>B.BitacoraRuntimeAdapter.getAll()
+    all:()=>B.BitacoraRuntimeAdapter.getAll(),
+    diagnoseEntries:period=>diagnoseEntries(period)
   };
 })(window.Bitacora);
