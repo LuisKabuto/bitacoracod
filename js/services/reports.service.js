@@ -13,6 +13,9 @@ window.Bitacora.services = window.Bitacora.services || {};
     const m=String(id||'').match(/^(\d{4}-\d{2}-\d{2})_/);return m?m[1]:'';
   };
   async function monthlyProduction(period){
+    const cacheSnap=await firebase.firestore().collection('rrhhMonthlyCache').where('period','==',period).get();
+    const cached=cacheSnap.docs.map(d=>d.data()||{}).filter(x=>Number(x.workDays||0)>0||Number(x.totalHours||0)>0||Number(x.lateCount||0)>0);
+    if(cached.length)return cached;
     const [attendanceSnap,usersSnap]=await Promise.all([firebase.firestore().collection('attendance').get(),firebase.firestore().collection('users').get()]);
     const users={};usersSnap.docs.forEach(d=>users[d.id]={uid:d.id,...d.data()});
     const out={};
