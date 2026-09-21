@@ -15,13 +15,17 @@ window.Bitacora.services = window.Bitacora.services || {};
     const nextPeriod=(()=>{const [y,m]=period.split('-').map(Number);const d=new Date(y,m,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')})()
     let snap=await firebase.firestore().collection('entries').where('date','>=',period+'-01').where('date','<',nextPeriod+'-01').get();
     if(snap.empty)snap=await firebase.firestore().collection('entries').get();
+    const usersSnap=await firebase.firestore().collection('users').get();
+    const usersById={},usersByName={};
+    usersSnap.docs.forEach(d=>{const u=d.data()||{};usersById[d.id]=u;if(u.name)usersByName[String(u.name).trim().toLowerCase()]=u});
     const rows={};
     snap.docs.forEach(doc=>{
       const r=doc.data()||{};
       const rawDate=String(r.date||'').trim();
       if(rawDate.slice(0,7)!==period)return;
       const key=r.userId||r.userName||doc.id;
-      rows[key]=rows[key]||{employeeCode:r.employeeCode||'SIN_CODIGO',userName:r.userName||'Sin nombre',workDays:0,totalHours:0,incompleteDays:0,lateCount:0};
+      const u=usersById[r.userId]||usersByName[String(r.userName||'').trim().toLowerCase()]||{};
+      rows[key]=rows[key]||{employeeCode:r.employeeCode||u.employeeCode||'SIN_CODIGO',userName:r.userName||u.name||'Sin nombre',workDays:0,totalHours:0,incompleteDays:0,lateCount:0};
       rows[key].workDays++;
       let h=Number(r.hours||0);
       if(!h)h=hoursBetween(r.checkIn,r.checkOut);
