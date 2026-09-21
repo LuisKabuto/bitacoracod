@@ -12,7 +12,8 @@ window.Bitacora.services = window.Bitacora.services || {};
     return Math.max(0,(hmMin(b)-hmMin(a))/60);
   };
   const aggregateEntries=async period=>{
-    const snap=await firebase.firestore().collection('entries').get();
+    const nextPeriod=(()=>{const [y,m]=period.split('-').map(Number);const d=new Date(y,m,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')})()
+    const snap=await firebase.firestore().collection('entries').where('date','>=',period+'-01').where('date','<',nextPeriod+'-01').get();
     const rows={};
     snap.docs.forEach(doc=>{
       const r=doc.data()||{};
