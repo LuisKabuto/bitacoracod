@@ -20,7 +20,7 @@ window.Bitacora=window.Bitacora||{};(function(B){
   }
   async function load(){
     const box=el('employeesList');if(!box)return;
-    try{users=await B.services.users.list();render()}
+    try{users=await B.services.users.list();if(B.currentUser&&B.currentUser.role==='admin'&&B.services.users.assignSequentialCodes){const result=await B.services.users.assignSequentialCodes();if(result.updated&&B.notify)B.notify(result.updated+' códigos de empleado asignados');users=await B.services.users.list()}render()}
     catch(e){box.innerHTML='<div class="empty-state">No fue posible cargar el personal.</div>';if(B.notify)B.notify('Error: '+(e.message||'No fue posible cargar el personal'))}
   }
   function bind(){
