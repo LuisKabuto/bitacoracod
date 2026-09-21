@@ -45,12 +45,14 @@ window.Bitacora.services = window.Bitacora.services || {};
       const u=usersById[r.userId]||usersByName[String(r.userName||'').trim().toLowerCase()]||{};
       rows[key]=rows[key]||{employeeCode:employeeCodeOf(r,u),userName:r.userName||u.name||'Sin nombre',workDays:0,totalHours:0,incompleteDays:0,lateCount:0};
       const crossDay=!!(r.checkIn&&r.checkOut&&String(r.checkIn).slice(0,10)!==String(r.checkOut).slice(0,10));
-      const validHours=r.checkIn&&r.checkOut&&!crossDay;
+      const validHours=!!(r.checkIn&&r.checkOut&&!crossDay);
       let h=0;
-      if(validHours)h=hoursBetween(r.checkIn,r.checkOut);
-      else if(!r.checkIn||!r.checkOut||crossDay)rows[key].incompleteDays++;
-      else if((r.checkIn||r.checkOut)==null&&Number.isFinite(Number(r.hours)))h=Math.max(0,Number(r.hours));
-      if(validHours||(!r.checkIn&&!r.checkOut))rows[key].workDays++;
+      if(validHours){
+        h=hoursBetween(r.checkIn,r.checkOut);
+        rows[key].workDays++;
+      }else{
+        rows[key].incompleteDays++;
+      }
       rows[key].totalHours=Math.round((rows[key].totalHours+h)*100)/100;
       if(r.status==='late'||(r.checkIn&&typeof r.checkIn==='string'&&r.checkIn.toLowerCase().includes('late')))rows[key].lateCount++;
     });
