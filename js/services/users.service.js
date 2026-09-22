@@ -14,8 +14,27 @@ window.Bitacora.services = window.Bitacora.services || {};
     'mileska ocando':'EMP-009',
     'jaime gaviria':'EMP-010'
   };
+
+  function runtime(){
+    return B.BitacoraRuntimeAdapter || window.BitacoraRuntimeAdapter || null;
+  }
+
+  function waitRuntime(){
+    const rt=runtime();
+    if(rt)return Promise.resolve(rt);
+    return new Promise(resolve=>{
+      window.addEventListener('bitacora:runtime-ready',()=>{
+        resolve(runtime());
+      },{once:true});
+    });
+  }
+
   B.services.users={
-    list:()=>B.BitacoraRuntimeAdapter.getUsers(),
+    list:async()=>{
+      const rt=await waitRuntime();
+      if(!rt||typeof rt.getUsers!=='function')throw new Error('El servicio de usuarios aún no está disponible');
+      return rt.getUsers();
+    },
     assignSequentialCodes:async()=>{
       if(typeof DEMO!=='undefined'&&DEMO)return {updated:0,skipped:0};
       const db=firebase.firestore(),snap=await db.collection('users').get();
