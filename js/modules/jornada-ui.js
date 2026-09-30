@@ -2,8 +2,20 @@
 window.Bitacora=window.Bitacora||{};(function(B){
   function el(id){return document.getElementById(id)}
   function n(m){if(B.notify)B.notify(m)}
-  function mins(hm){if(!hm||!/^\d{2}:\d{2}$/.test(hm))return 0;const [h,m]=hm.split(':').map(Number);return h*60+m}
+  function mins(hm){if(!hm||!/^d{2}:\d{2}$/.test(hm))return 0;const [h,m]=hm.split(':').map(Number);return h*60+m}
+  function hm(v){v=((Number(v)||0)%1440+1440)%1440;return String(Math.floor(v/60)).padStart(2,'0')+':'+String(v%60).padStart(2,'0')}
   function fmtMinutes(v){v=Math.max(0,Number(v)||0);return (v/60).toFixed(2)+' h'}
+  function lateCompensationMessage(entryHm){
+    const start=mins(B.config?.defaultSchedule?.start||'08:00');
+    const end=mins(B.config?.defaultSchedule?.end||'15:00');
+    const entry=mins(entryHm);
+    const delay=Math.max(0,entry-start);
+    if(!delay)return 'Entrada registrada';
+    const exit=hm(end+delay);
+    const hours=Math.floor(delay/60),minutes=delay%60;
+    const delayText=hours?(hours+' h'+(minutes?' '+minutes+' min':'')):(minutes+' min');
+    return 'Entrada registrada con retardo. Debes permanecer '+delayText+' adicionales y completar tu jornada hasta las '+exit+'.';
+  }
   function renderMine(rows){
     const user=B.currentUser;
     if(!user)return;
@@ -52,7 +64,12 @@ window.Bitacora=window.Bitacora||{};(function(B){
     if(el('btnLateConfirm'))el('btnLateConfirm').onclick=async()=>{
       const j=reason.value.trim();
       if(!j)return n('Indica el motivo del retardo');
-      try{await a.checkIn(pendingActivity,j);closeLateModal();n('Entrada registrada')}catch(e){n('Error: '+(e.message||'No fue posible registrar la entrada'))}
+      try{
+        await a.checkIn(pendingActivity,j);
+        const entryHm=B.utils.nowHM();
+        closeLateModal();
+        n(lateCompensationMessage(entryHm));
+      }catch(e){n('Error: '+(e.message||'No fue posible registrar la entrada'))}
     };
     el('btnCheckIn').onclick=async()=>{
       const activity=i.value.trim();
