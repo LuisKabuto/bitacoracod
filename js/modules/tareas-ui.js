@@ -13,6 +13,7 @@ window.Bitacora=window.Bitacora||{};(function(B){
     if(t.status==='pending'&&t.assignedTo===u.uid)html+='<button class="btn btn-primary" data-task-action="start" data-task-id="'+esc(t.id)+'">Iniciar</button>';
     if(t.status==='in_progress'&&t.assignedTo===u.uid)html+='<button class="btn btn-secondary" data-task-action="finish" data-task-id="'+esc(t.id)+'">Terminar</button>';
     if(t.status==='awaiting_validation'&&['admin','supervisor'].includes(u.role))html+='<button class="btn btn-secondary" data-task-action="validate" data-task-id="'+esc(t.id)+'">Validar</button>';
+    if(['admin','supervisor'].includes(u.role)&&t.status!=='completed')html+='<button class="btn btn-primary" data-task-action="complete" data-task-id="'+esc(t.id)+'">Finalizar tarea</button>';
     return html;
   }
   function render(tasks){
@@ -29,7 +30,7 @@ window.Bitacora=window.Bitacora||{};(function(B){
     if(mando)mando.innerHTML=html;
   }
   async function runAction(id,action){
-    try{await B.services.tasks.action(id,action);const labels2={start:'Tarea iniciada',finish:'Tarea enviada a validación',validate:'Tarea validada'};n(labels2[action]||'Tarea actualizada')}
+    try{await B.services.tasks.action(id,action);const labels2={start:'Tarea iniciada',finish:'Tarea enviada a validación',validate:'Tarea validada',complete:'Tarea finalizada'};n(labels2[action]||'Tarea actualizada')}
     catch(e){n('Error: '+(e.message||'No fue posible actualizar la tarea'))}
   }
   function bind(){
