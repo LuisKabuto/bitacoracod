@@ -52,6 +52,21 @@ window.Bitacora=window.Bitacora||{};(function(B){
         if(current)sel.value=current;
       }catch(e){n('No fue posible cargar los empleados')}
     }
+    const absencePdf=el('btnAbsencePDF');
+    if(absencePdf)absencePdf.onclick=async()=>{
+      const p=period?.value,uid=el('absenceEmployee')?.value;
+      if(!p)return n('Selecciona un período');
+      if(!uid)return n('Selecciona un empleado');
+      try{
+        const r=await B.services.reports.absences(p,uid);
+        if(!r.employee)return n('No se encontró el empleado');
+        const escPdf=v=>String(v==null?'':v).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
+        const rows=r.absences.length?r.absences.map(d=>'<tr><td>'+escPdf(d)+'</td><td>Sin registro de jornada</td></tr>').join(''):'<tr><td colspan="2">No se registraron inasistencias en los días laborables considerados.</td></tr>';
+        const w=window.open('','_blank');if(!w)return n('Habilita ventanas emergentes para exportar');
+        w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Reporte de inasistencias</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:38px}h1{margin:0 0 5px;font-size:25px}.muted{color:#667085}.head{border-bottom:2px solid #172033;padding-bottom:16px;margin-bottom:20px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.box{border:1px solid #d9dee8;border-radius:9px;padding:12px}.box strong{display:block;font-size:20px;margin-top:5px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{text-align:left;padding:10px;border-bottom:1px solid #e5e7eb}th{font-size:12px;text-transform:uppercase;color:#667085}footer{margin-top:30px;font-size:11px;color:#667085}@media print{body{margin:18px}}</style></head><body><div class="head"><h1>Reporte de Inasistencias</h1><div class="muted">Bitácora PRO · Período '+escPdf(p)+'</div><div><strong>'+escPdf(r.employee.name)+'</strong> · '+escPdf(r.employee.employeeCode)+'</div></div><div class="grid"><div class="box">Jornada semanal<strong>'+Number(r.weeklyHours||22.5).toFixed(2)+' h</strong></div><div class="box">Horas esperadas<strong>'+Number(r.expectedHours||0).toFixed(2)+' h</strong></div><div class="box">Días con asistencia<strong>'+r.attendanceDays+'</strong></div><div class="box">Inasistencias<strong>'+r.absences.length+'</strong></div></div><h2>Fechas de inasistencia</h2><table><thead><tr><th>Fecha</th><th>Estado</th></tr></thead><tbody>'+rows+'</tbody></table><footer>Horario laboral: lunes a viernes, 08:00 a 12:30. Los días futuros del mes no se consideran. Generado por Bitácora PRO · '+new Date().toLocaleString('es-VE')+'</footer></body></html>');
+        w.document.close();w.focus();setTimeout(()=>w.print(),300);
+      }catch(e){n('Error: '+(e.message||'No fue posible generar el PDF'))}
+    };
     const absenceBtn=el('btnCheckAbsences');
     if(absenceBtn)absenceBtn.onclick=async()=>{
       const p=period?.value,uid=el('absenceEmployee')?.value;
