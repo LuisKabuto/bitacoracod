@@ -61,7 +61,7 @@ window.Bitacora=window.Bitacora||{};(function(B){
       if(body)body.innerHTML='<tr><td colspan="2">Consultando...</td></tr>';
       try{
         const r=await B.services.reports.absences(p,uid);
-        if(summary)summary.innerHTML='<div><strong>'+r.workDays+'</strong><span>Días laborables</span></div><div><strong>'+r.attendanceDays+'</strong><span>Días con asistencia</span></div><div class="warning"><strong>'+r.absences.length+'</strong><span>Inasistencias</span></div>';
+        if(summary)summary.innerHTML='<div><strong>'+r.weeklyHours.toFixed(2)+' h</strong><span>Jornada semanal</span></div><div><strong>'+r.expectedHours.toFixed(2)+' h</strong><span>Horas esperadas</span></div><div><strong>'+r.attendanceDays+'</strong><span>Días con asistencia</span></div><div class="warning"><strong>'+r.absences.length+'</strong><span>Inasistencias</span></div>';
         if(body)body.innerHTML=r.absences.length?r.absences.map(d=>'<tr><td><strong>'+esc(d)+'</strong></td><td><span class="report-late-pill">Sin registro</span></td></tr>').join(''):'<tr><td colspan="2">No se encontraron inasistencias en los días laborables de este período.</td></tr>';
       }catch(e){if(body)body.innerHTML='<tr><td colspan="2">No fue posible consultar las inasistencias.</td></tr>';n('Error: '+(e.message||'No fue posible consultar las inasistencias'))}
     };
