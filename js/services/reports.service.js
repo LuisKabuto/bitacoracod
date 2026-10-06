@@ -106,9 +106,31 @@ window.Bitacora.services = window.Bitacora.services || {};
     records.sort((a,b)=>a.date.localeCompare(b.date)||a.userName.localeCompare(b.userName));
     return {period,total:records.length,records};
   }
+  async function absences(period,uid){
+    const usersSnap=await firebase.firestore().collection('users').get();
+    const users=usersSnap.docs.map(d=>({uid:d.id,...d.data()}));
+    const user=users.find(u=>u.uid===uid)||users.find(u=>String(u.employeeCode||'')===String(uid));
+    if(!user)return {period,employee:null,workDays:0,attendanceDays:0,absences:[],attendanceDates:[]};
+    const targetUid=user.uid;
+    const snap=await firebase.firestore().collection('attendance').get();
+    const attended=new Set();
+    snap.docs.forEach(doc=>{
+      const r=doc.data()||{},date=String(r.date||'').slice(0,10),employeeUid=r.employeeUid||r.uid||doc.id.replace(/^\\d{4}-\\d{2}-\\d{2}_/,'');
+      if(date.slice(0,7)===period&&employeeUid===targetUid)attended.add(date);
+    });
+    const [y,m]=period.split('-').map(Number),days=new Date(y,m,0).getDate(),absences=[],workDates=[];
+    for(let day=1;day<=days;day++){
+      const date=period+'-'+String(day).padStart(2,'0'),dow=new Date(y,m-1,day).getDay();
+      if(dow===0||dow===6)continue;
+      workDates.push(date);
+      if(!attended.has(date))absences.push(date);
+    }
+    return {period,employee:{uid:targetUid,name:user.name||'Sin nombre',employeeCode:user.employeeCode||'SIN_CODIGO'},workDays:workDates.length,attendanceDays:workDates.filter(d=>attended.has(d)).length,absences,attendanceDates:[...attended].sort()};
+  }
   B.services.reports={
     monthly:period=>isDemo()?B.BitacoraRuntimeAdapter.getMonthly(period):monthlyProduction(period),
     all:()=>B.BitacoraRuntimeAdapter.getAll(),
-    diagnoseEntries:period=>diagnoseEntries(period)
+    diagnoseEntries:period=>diagnoseEntries(period),
+    absences:(period,uid)=>isDemo()?Promise.resolve({period,employee:null,workDays:0,attendanceDays:0,absences:[],attendanceDates:[]}):absences(period,uid)
   };
 })(window.Bitacora);
