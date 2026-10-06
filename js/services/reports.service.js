@@ -118,14 +118,18 @@ window.Bitacora.services = window.Bitacora.services || {};
       const r=doc.data()||{},date=String(r.date||'').slice(0,10),employeeUid=r.employeeUid||r.uid||doc.id.replace(/^\\d{4}-\\d{2}-\\d{2}_/,'');
       if(date.slice(0,7)===period&&employeeUid===targetUid)attended.add(date);
     });
-    const [y,m]=period.split('-').map(Number),days=new Date(y,m,0).getDate(),absences=[],workDates=[];
-    for(let day=1;day<=days;day++){
+    const [y,m]=period.split('-').map(Number),days=new Date(y,m,0).getDate();
+    const now=new Date(),todayStr=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Caracas',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+    const limit=period===todayStr.slice(0,7)?Number(todayStr.slice(8,10)):days;
+    const absences=[],workDates=[];
+    for(let day=1;day<=Math.min(days,limit);day++){
       const date=period+'-'+String(day).padStart(2,'0'),dow=new Date(y,m-1,day).getDay();
       if(dow===0||dow===6)continue;
       workDates.push(date);
       if(!attended.has(date))absences.push(date);
     }
-    return {period,employee:{uid:targetUid,name:user.name||'Sin nombre',employeeCode:user.employeeCode||'SIN_CODIGO'},workDays:workDates.length,attendanceDays:workDates.filter(d=>attended.has(d)).length,absences,attendanceDates:[...attended].sort()};
+    const expectedHours=workDates.length*4.5;
+    return {period,employee:{uid:targetUid,name:user.name||'Sin nombre',employeeCode:user.employeeCode||'SIN_CODIGO'},workDays:workDates.length,attendanceDays:workDates.filter(d=>attended.has(d)).length,expectedHours,weeklyHours:22.5,absences,attendanceDates:[...attended].filter(d=>d<=period+'-'+String(limit).padStart(2,'0')).sort()};
   }
   B.services.reports={
     monthly:period=>isDemo()?B.BitacoraRuntimeAdapter.getMonthly(period):monthlyProduction(period),
