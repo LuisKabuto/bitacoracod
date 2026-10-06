@@ -43,6 +43,29 @@ window.Bitacora=window.Bitacora||{};(function(B){
       };
     }
     ensureDiagnostic();
+    async function loadAbsenceEmployees(){
+      const sel=el('absenceEmployee');if(!sel)return;
+      try{
+        const users=await B.services.users.list();
+        const current=sel.value;
+        sel.innerHTML='<option value="">Selecciona un empleado</option>'+users.map(u=>'<option value="'+esc(u.uid)+'">'+esc(u.name||'Sin nombre')+' · '+esc(u.employeeCode||'SIN_CODIGO')+'</option>').join('');
+        if(current)sel.value=current;
+      }catch(e){n('No fue posible cargar los empleados')}
+    }
+    const absenceBtn=el('btnCheckAbsences');
+    if(absenceBtn)absenceBtn.onclick=async()=>{
+      const p=period?.value,uid=el('absenceEmployee')?.value;
+      if(!p)return n('Selecciona un período');
+      if(!uid)return n('Selecciona un empleado');
+      const body=el('absenceBody'),summary=el('absenceSummary');
+      if(body)body.innerHTML='<tr><td colspan="2">Consultando...</td></tr>';
+      try{
+        const r=await B.services.reports.absences(p,uid);
+        if(summary)summary.innerHTML='<div><strong>'+r.workDays+'</strong><span>Días laborables</span></div><div><strong>'+r.attendanceDays+'</strong><span>Días con asistencia</span></div><div class="warning"><strong>'+r.absences.length+'</strong><span>Inasistencias</span></div>';
+        if(body)body.innerHTML=r.absences.length?r.absences.map(d=>'<tr><td><strong>'+esc(d)+'</strong></td><td><span class="report-late-pill">Sin registro</span></td></tr>').join(''):'<tr><td colspan="2">No se encontraron inasistencias en los días laborables de este período.</td></tr>';
+      }catch(e){if(body)body.innerHTML='<tr><td colspan="2">No fue posible consultar las inasistencias.</td></tr>';n('Error: '+(e.message||'No fue posible consultar las inasistencias'))}
+    };
+    loadAbsenceEmployees();
     if(monthly)monthly.onclick=async()=>{const p=period.value;if(!p)return n('Selecciona un período');try{const rows=await r.monthly(p),out=[['Código','Empleado','Días laborados','Horas totales','Días incompletos','Retardos'].map(csvCell).join(',')];rows.forEach(x=>out.push([x.employeeCode,x.userName,x.workDays,x.totalHours,x.incompleteDays,x.lateCount].map(csvCell).join(',')));download('\ufeff'+out.join('\n'),'asistencia_'+p+'.csv');n('Reporte mensual generado')}catch(e){n('Error: '+(e.message||'No fue posible generar el reporte'))}};
     if(all)all.onclick=async()=>{try{const rows=await r.all(),out=[['Fecha','Empleado','Entrada','Salida','Horas','Estado'].map(csvCell).join(',')];rows.forEach(x=>out.push([x.date,x.userName,x.checkIn&&x.checkIn.local||'',x.checkOut&&x.checkOut.local||'',((x.totalMinutes||0)/60).toFixed(2),x.status].map(csvCell).join(',')));download('\ufeff'+out.join('\n'),'bitacora_completa.csv');n('Exportación completa generada')}catch(e){n('Error: '+(e.message||'No fue posible exportar'))}};
     if(pdf)pdf.onclick=async()=>{try{const p=period.value||B.utils.todayStr().slice(0,7),rows=await r.monthly(p),w=window.open('','_blank');if(!w)return n('Habilita ventanas emergentes para exportar');const totalDays=rows.reduce((a,x)=>a+(x.workDays||0),0),totalHours=rows.reduce((a,x)=>a+(x.totalHours||0),0),totalLate=rows.reduce((a,x)=>a+(x.lateCount||0),0);w.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Reporte Bitácora PRO</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:40px}h1{margin:0 0 6px}.muted{color:#667085}.summary{display:flex;gap:12px;margin:24px 0}.box{border:1px solid #d9dee8;border-radius:10px;padding:14px;flex:1}.box b{display:block;font-size:24px;margin-top:5px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{text-align:left;padding:10px;border-bottom:1px solid #e5e7eb}th{font-size:12px;text-transform:uppercase;color:#667085}@media print{body{margin:18px}}</style></head><body><h1>Bitácora PRO</h1><div class="muted">Reporte mensual · '+p+'</div><div class="summary"><div class="box">Personal<b>'+rows.length+'</b></div><div class="box">Días registrados<b>'+totalDays+'</b></div><div class="box">Horas<b>'+totalHours.toFixed(2)+'</b></div><div class="box">Retardos<b>'+totalLate+'</b></div></div><table><thead><tr><th>Empleado</th><th>Días válidos</th><th>Horas válidas</th><th>Incompletos</th><th>Retardos</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+String(x.userName||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))+'</td><td>'+x.workDays+'</td><td>'+Number(x.totalHours||0).toFixed(2)+'</td><td>'+x.incompleteDays+'</td><td>'+x.lateCount+'</td></tr>').join('')+'</tbody></table><p class="muted">Generado por Bitácora PRO · '+new Date().toLocaleString('es-VE')+'</p></body></html>');w.document.close();w.focus();setTimeout(()=>w.print(),300)}catch(e){n('Error: '+(e.message||'No fue posible generar el PDF'))}};
