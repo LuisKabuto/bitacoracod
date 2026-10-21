@@ -5,6 +5,7 @@ window.Bitacora.services = window.Bitacora.services || {};
   const isDemo=()=>typeof DEMO!=='undefined'&&DEMO;
   const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Caracas',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const hmMin=hm=>{const p=String(hm||'').split(':').map(Number);return (p[0]||0)*60+(p[1]||0)};
+  const isWorkday=date=>{const m=String(date||'').slice(0,10).match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);if(!m)return false;const day=new Date(Date.UTC(Number(m[1]),Number(m[2])-1,Number(m[3]))).getUTCDay();return day!==0&&day!==6};
   const sequentialCodes={
     'luis puentes':'EMP-001','osledy avila':'EMP-002','fernanda montañez':'EMP-003','asser de oliveira':'EMP-004',
     'lesamir colmenares':'EMP-005','edwar vielma':'EMP-006','maryori sanchez':'EMP-007','carlos malpica':'EMP-008',
@@ -40,7 +41,7 @@ window.Bitacora.services = window.Bitacora.services || {};
     snap.docs.forEach(doc=>{
       const r=doc.data()||{};
       const rawDate=String(r.date||'').trim();
-      if(rawDate.slice(0,7)!==period)return;
+      if(rawDate.slice(0,7)!==period||!isWorkday(rawDate))return;
       const key=r.userId||r.userName||doc.id;
       const u=usersById[r.userId]||usersByName[String(r.userName||'').trim().toLowerCase()]||{};
       rows[key]=rows[key]||{employeeCode:employeeCodeOf(r,u),userName:r.userName||u.name||'Sin nombre',workDays:0,totalHours:0,incompleteDays:0,lateCount:0};
@@ -62,15 +63,13 @@ window.Bitacora.services = window.Bitacora.services || {};
     await ensureEmployeeCodes();
     const historical=await aggregateEntries(period);
     if(historical.length)return historical;
-    const cacheSnap=await firebase.firestore().collection('rrhhMonthlyCache').where('period','==',period).get();
-    const cached=cacheSnap.docs.map(d=>d.data()||{}).filter(x=>Number(x.workDays||0)>0||Number(x.totalHours||0)>0||Number(x.lateCount||0));
-    if(cached.length)return cached;
+    // Los resúmenes en caché no contienen fechas por registro; se evita usarlos para no contar sábados y domingos como días laborables.
     const [attendanceSnap,usersSnap]=await Promise.all([firebase.firestore().collection('attendance').get(),firebase.firestore().collection('users').get()]);
     const users={};usersSnap.docs.forEach(d=>users[d.id]={uid:d.id,...d.data()});
     const out={};
     for(const doc of attendanceSnap.docs){
       const r=doc.data()||{},date=typeof r.date==='string'?r.date.slice(0,10):'';
-      if(!date||date.slice(0,7)!==period)continue;
+      if(!date||date.slice(0,7)!==period||!isWorkday(date))continue;
       const uid=r.employeeUid||r.uid||doc.id.replace(/^\d{4}-\d{2}-\d{2}_/,'');
       const u=users[uid]||{},key=uid||doc.id;
       let minutes=Number(r.totalMinutes||0);
