@@ -131,10 +131,31 @@ window.Bitacora.services = window.Bitacora.services || {};
     const expectedHours=workDates.length*4.5;
     return {period,employee:{uid:targetUid,name:user.name||'Sin nombre',employeeCode:user.employeeCode||'SIN_CODIGO'},workDays:workDates.length,attendanceDays:workDates.filter(d=>attended.has(d)).length,expectedHours,weeklyHours:22.5,absences,attendanceDates:[...attended].filter(d=>d<=period+'-'+String(limit).padStart(2,'0')).sort()};
   }
+  async function lateReasons(period){
+    const [attendanceSnap,usersSnap]=await Promise.all([
+      firebase.firestore().collection('attendance').get(),
+      firebase.firestore().collection('users').get()
+    ]);
+    const users={};usersSnap.docs.forEach(d=>users[d.id]={uid:d.id,...d.data()});
+    const rows=[];
+    attendanceSnap.docs.forEach(doc=>{
+      const r=doc.data()||{},date=String(r.date||'').slice(0,10),ci=r.checkIn||{};
+      if(date.slice(0,7)!==period)return;
+      if(ci.status!=='late'&&!ci.justification)return;
+      const uid=r.employeeUid||r.uid||doc.id.replace(/^\\d{4}-\\d{2}-\\d{2}_/,'');
+      const u=users[uid]||{};
+      const entry=String(ci.local||'');
+      const [hh,mm]=entry.split(':').map(Number);
+      const delay=Number.isFinite(hh)&&Number.isFinite(mm)?Math.max(0,hh*60+mm-480):null;
+      rows.push({date,employee:r.userName||u.name||'Sin nombre',employeeCode:u.employeeCode||r.employeeCode||'SIN_CODIGO',entry,delayMinutes:delay,justification:ci.justification||'No se registró el motivo'});
+    });
+    return rows.sort((a,b)=>a.date.localeCompare(b.date)||a.employee.localeCompare(b.employee));
+  }
   B.services.reports={
     monthly:period=>isDemo()?B.BitacoraRuntimeAdapter.getMonthly(period):monthlyProduction(period),
     all:()=>B.BitacoraRuntimeAdapter.getAll(),
     diagnoseEntries:period=>diagnoseEntries(period),
-    absences:(period,uid)=>isDemo()?Promise.resolve({period,employee:null,workDays:0,attendanceDays:0,absences:[],attendanceDates:[]}):absences(period,uid)
+    absences:(period,uid)=>isDemo()?Promise.resolve({period,employee:null,workDays:0,attendanceDays:0,absences:[],attendanceDates:[]}):absences(period,uid),
+    lateReasons:period=>isDemo()?Promise.resolve([]):lateReasons(period)
   };
 })(window.Bitacora);
