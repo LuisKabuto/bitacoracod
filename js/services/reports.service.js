@@ -132,23 +132,37 @@ window.Bitacora.services = window.Bitacora.services || {};
     return {period,employee:{uid:targetUid,name:user.name||'Sin nombre',employeeCode:user.employeeCode||'SIN_CODIGO'},workDays:workDates.length,attendanceDays:workDates.filter(d=>attended.has(d)).length,expectedHours,weeklyHours:22.5,absences,attendanceDates:[...attended].filter(d=>d<=period+'-'+String(limit).padStart(2,'0')).sort()};
   }
   async function lateReasons(period){
-    const [attendanceSnap,usersSnap]=await Promise.all([
-      firebase.firestore().collection('attendance').get(),
-      firebase.firestore().collection('users').get()
+    const db=firebase.firestore();
+    const [attendanceSnap,entriesSnap,usersSnap]=await Promise.all([
+      db.collection('attendance').get(),
+      db.collection('entries').get(),
+      db.collection('users').get()
     ]);
     const users={};usersSnap.docs.forEach(d=>users[d.id]={uid:d.id,...d.data()});
-    const rows=[];
-    attendanceSnap.docs.forEach(doc=>{
-      const r=doc.data()||{},date=String(r.date||'').slice(0,10),ci=r.checkIn||{};
+    const rows=[],seen=new Set();
+    function addRecord(doc,legacy){
+      const r=doc.data()||{};
+      const date=String(r.date||'').slice(0,10);
       if(date.slice(0,7)!==period)return;
-      if(ci.status!=='late'&&!ci.justification)return;
-      const uid=r.employeeUid||r.uid||doc.id.replace(/^\\d{4}-\\d{2}-\\d{2}_/,'');
-      const u=users[uid]||{};
-      const entry=String(ci.local||'');
+      let ci=r.checkIn||{};
+      if(typeof ci==='string')ci={local:ci,status:r.status||'',justification:r.justification||r.lateReason||''};
+      const status=String(ci.status||r.checkInStatus||r.status||'').toLowerCase();
+      const justification=ci.justification||r.justification||r.lateReason||r.reason||'';
+      const entry=String(ci.local||r.localCheckIn||r.entryTime||'');
       const [hh,mm]=entry.split(':').map(Number);
+      const late=status==='late'||!!justification||(Number.isFinite(hh)&&Number.isFinite(mm)&&hh*60+mm>490);
+      if(!late)return;
+      const uid=r.employeeUid||r.userId||r.uid||doc.id.replace(/^\\d{4}-\\d{2}-\\d{2}_/,'');
+      const u=users[uid]||{};
+      const employee=r.userName||u.name||r.name||'Sin nombre';
+      const key=date+'|'+(uid||employee);
+      if(seen.has(key))return;
+      seen.add(key);
       const delay=Number.isFinite(hh)&&Number.isFinite(mm)?Math.max(0,hh*60+mm-480):null;
-      rows.push({date,employee:r.userName||u.name||'Sin nombre',employeeCode:u.employeeCode||r.employeeCode||'SIN_CODIGO',entry,delayMinutes:delay,justification:ci.justification||'No se registró el motivo'});
-    });
+      rows.push({date,employee,employeeCode:u.employeeCode||r.employeeCode||'SIN_CODIGO',entry:entry||'--:--',delayMinutes:delay,justification:justification||'No se registró el motivo'});
+    }
+    attendanceSnap.docs.forEach(d=>addRecord(d,false));
+    entriesSnap.docs.forEach(d=>addRecord(d,true));
     return rows.sort((a,b)=>a.date.localeCompare(b.date)||a.employee.localeCompare(b.employee));
   }
   B.services.reports={
