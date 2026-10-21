@@ -38,7 +38,8 @@ window.Bitacora=window.Bitacora||{};
       const next=x.status==='open'?'in_progress':x.status==='in_progress'?'resolved':null;
       const action=next?'<button class="btn btn-secondary incident-action" data-id="'+esc(x.id)+'" data-status="'+next+'">'+(next==='in_progress'?'Tomar en atención':'Marcar resuelta')+'</button>':'';
       const resolvedClass=x.status==='resolved'?' incident-resolved':'';
-      const created=dateTime(x.createdAt);\n      const activity=age(x.updatedAt||x.createdAt);
+      const created=dateTime(x.createdAt);
+      const activity=age(x.updatedAt||x.createdAt);
       return '<article class="incident-card'+resolvedClass+'"><div class="incident-icon '+esc(x.priority||'medium')+'">'+initials(x.category)+'</div><div class="incident-main"><div class="incident-top"><strong>'+esc(x.title)+'</strong><span class="badge b-'+(x.priority==='high'?'red':x.priority==='medium'?'amber':'gray')+'">'+esc(priority[x.priority]||x.priority)+'</span></div><div class="incident-meta"><span>'+esc(x.category)+'</span><span>•</span><span>'+esc(labels[x.status]||x.status)+'</span><span>•</span><span>'+esc(x.assignedName||'Sin responsable')+'</span><span>•</span><span class="incident-activity">Actividad '+esc(activity||'recién registrada')+'</span></div><p class="incident-description">'+esc(x.description||'Sin descripción')+'</p><div class="incident-actions">'+(created?'<span class="incident-age">Registrada '+esc(created)+'</span>':'')+action+'</div></div></article>';
     }).join('');
   }
@@ -69,7 +70,9 @@ window.Bitacora=window.Bitacora||{};
       const b=ev.target.closest('.incident-action');if(!b)return;
       try{await service.update(b.dataset.id,b.dataset.status);B.notify(b.dataset.status==='resolved'?'Incidencia resuelta':'Incidencia tomada en atención')}catch(e){B.notify('Error: '+(e.message||'No fue posible actualizar la incidencia'))}
     });
-    await loadUsers();\n    if(state.timer)clearInterval(state.timer);\n    state.timer=setInterval(()=>{if(state.rows.length)render()},60000);
+    await loadUsers();
+    if(state.timer)clearInterval(state.timer);
+    state.timer=setInterval(()=>{if(state.rows.length)render()},60000);
     const nav=document.querySelector('.nav-item[data-view="incidencias"]');
     if(nav)nav.onclick=()=>{document.querySelectorAll('#view-app section.view').forEach(s=>s.classList.toggle('active',s.id==='view-incidencias'));document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view==='incidencias'));el('pageTitle').textContent='Incidencias';el('pageSubtitle').textContent='Registro y seguimiento operativo';render()};
     window.addEventListener('bitacora:session-changed',loadUsers);
