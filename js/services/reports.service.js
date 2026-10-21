@@ -5,7 +5,7 @@ window.Bitacora.services = window.Bitacora.services || {};
   const isDemo=()=>typeof DEMO!=='undefined'&&DEMO;
   const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Caracas',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const hmMin=hm=>{const p=String(hm||'').split(':').map(Number);return (p[0]||0)*60+(p[1]||0)};
-  const isWorkday=date=>{const m=String(date||'').slice(0,10).match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);if(!m)return false;const day=new Date(Date.UTC(Number(m[1]),Number(m[2])-1,Number(m[3]))).getUTCDay();return day!==0&&day!==6};
+  const isWorkday=date=>{const p=String(date||'').slice(0,10).split('-');if(p.length!==3)return false;const day=new Date(Date.UTC(Number(p[0]),Number(p[1])-1,Number(p[2]))).getUTCDay();return day!==0&&day!==6};
   const sequentialCodes={
     'luis puentes':'EMP-001','osledy avila':'EMP-002','fernanda montañez':'EMP-003','asser de oliveira':'EMP-004',
     'lesamir colmenares':'EMP-005','edwar vielma':'EMP-006','maryori sanchez':'EMP-007','carlos malpica':'EMP-008',
