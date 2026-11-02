@@ -49,7 +49,7 @@ window.Bitacora=window.Bitacora||{};(function(B){
     const createBtn=el('btnCreateEmployee');if(createBtn)createBtn.onclick=createEmployee;
     const list=el('employeesList');if(list)list.addEventListener('click',ev=>{const b=ev.target.closest('[data-employee-toggle]');if(!b)return;toggleEmployee(b.dataset.employeeToggle,b.dataset.active==='true')});
     ['employeeSearch','employeeRoleFilter','employeeStatusFilter'].forEach(id=>{const x=el(id);if(x)x.addEventListener(id==='employeeSearch'?'input':'change',render)});
-    window.addEventListener('bitacora:session-changed',()=>{if(B.permissions&&B.permissions.can('empleados'))load()});
+    window.addEventListener('bitacora:session-changed',()=>{const panel=el('employeeAdminPanel');if(panel)panel.hidden=!(B.currentUser&&B.currentUser.role==='admin');if(B.permissions&&B.permissions.can('empleados'))load()});
   }
   window.addEventListener('bitacora:modules-ready',bind,{once:true})
 })(window.Bitacora);
