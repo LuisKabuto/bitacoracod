@@ -31,6 +31,26 @@ window.Bitacora=window.Bitacora||{};(function(B){
     const current=(mine.blocks||[]).slice().reverse().find(b=>!b.localEnd);
     activity.textContent=current&&current.activity?current.activity:'Sin actividad activa';
   }
+  let rosterUsers=[];
+  function renderOperatorRoster(){
+    const panel=el('operatorRoster');if(!panel)return;
+    const byUid=new Map(rows.map(r=>[r.employeeUid,r]));
+    const activeUsers=rosterUsers.filter(u=>u.isActive!==false);
+    panel.innerHTML='<div class="card-head"><div><h2>Estado del personal</h2><p>Quién está en oficina y quién está fuera, según el registro de hoy.</p></div><span class="date-pill">'+esc(B.utils.todayStr())+'</span></div><div class="table-wrap"><table><thead><tr><th>Empleado</th><th>Estado</th></tr></thead><tbody>'+activeUsers.map(u=>{const r=byUid.get(u.uid);const present=!!r&&r.status==='open';const status=present?'<span class="badge b-green">En oficina</span>':r?'<span class="badge b-gray">Fuera de oficina</span>':'<span class="badge b-gray">Sin entrada registrada</span>';return '<tr><td>'+esc(u.name||'Sin nombre')+'</td><td>'+status+'</td></tr>'}).join('')+'</tbody></table></div>';
+  }
+  function configureOperatorDashboard(){
+    const operator=B.currentUser&&B.currentUser.role==='operator';
+    const box=el('view-dashboard');if(!box)return;
+    configureOperatorDashboard();
+    const stats=box.querySelector('.stats-grid'),grid=box.querySelector('.dashboard-grid'),alerts=el('dashboardAlerts');
+    if(stats)stats.hidden=operator;
+    if(grid)grid.hidden=operator;
+    if(alerts)alerts.hidden=operator;
+    let panel=el('operatorRoster');
+    if(operator&&!panel){panel=document.createElement('div');panel.id='operatorRoster';panel.className='card';const head=box.querySelector('.page-head');if(head)head.insertAdjacentElement('afterend',panel)}
+    if(panel)panel.hidden=!operator;
+    if(operator){B.services.users.list().then(list=>{rosterUsers=list||[];renderOperatorRoster()}).catch(e=>console.error('No se pudo cargar el personal:',e));renderOperatorRoster()}
+  }
   function bind(){
     const box=el('view-dashboard');if(!box)return;
     let panel=el('dashboardAlerts');
@@ -44,7 +64,7 @@ window.Bitacora=window.Bitacora||{};(function(B){
     if(unsubToday)unsubToday();if(unsubBlocks)unsubBlocks();
     const a=B.services&&B.services.attendance;
     if(a){
-      unsubToday=a.subscribeToday(data=>{rows=data||[];refreshMyDay();refreshAlerts()});
+      unsubToday=a.subscribeToday(data=>{rows=data||[];refreshMyDay();refreshAlerts();renderOperatorRoster()});
       unsubBlocks=a.subscribeMyBlocks(data=>{blocks=data||[];refreshMyDay()});
     }
     box.querySelectorAll('[data-dashboard-view]').forEach(btn=>btn.onclick=()=>{const nav=document.querySelector('.nav-item[data-view="'+btn.dataset.dashboardView+'"]);if(nav)nav.click()});
@@ -52,8 +72,8 @@ window.Bitacora=window.Bitacora||{};(function(B){
     if(timer)clearInterval(timer);timer=setInterval(()=>{refreshAlerts();refreshMyDay()},60000);
     window.addEventListener('bitacora:session-changed',()=>{
       if(unsubToday)unsubToday();if(unsubBlocks)unsubBlocks();
-      rows=[];blocks=[];refreshMyDay();
-      if(B.currentUser&&a){unsubToday=a.subscribeToday(data=>{rows=data||[];refreshMyDay();refreshAlerts()});unsubBlocks=a.subscribeMyBlocks(data=>{blocks=data||[];refreshMyDay()})}
+      rows=[];blocks=[];refreshMyDay();configureOperatorDashboard();
+      if(B.currentUser&&a){unsubToday=a.subscribeToday(data=>{rows=data||[];refreshMyDay();refreshAlerts();renderOperatorRoster()});unsubBlocks=a.subscribeMyBlocks(data=>{blocks=data||[];refreshMyDay()})}
     });
   }
   window.addEventListener('bitacora:modules-ready',bind,{once:true});
