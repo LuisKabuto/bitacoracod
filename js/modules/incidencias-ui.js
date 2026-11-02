@@ -46,7 +46,7 @@ window.Bitacora=window.Bitacora||{};
   async function loadUsers(){
     const users=await B.services.users.list();
     const sel=el('incidentAssignee');
-    if(sel)sel.innerHTML=users.map(u=>'<option value="'+esc(u.uid)+'">'+esc(u.name)+'</option>').join('');
+    if(sel)sel.innerHTML=users.filter(u=>u.isActive!==false).map(u=>'<option value="'+esc(u.uid)+'">'+esc(u.name)+'</option>').join('');
   }
   async function create(){
     const title=el('incidentTitle').value.trim(),assignee=el('incidentAssignee'),desc=el('incidentDescription').value.trim();
