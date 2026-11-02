@@ -24,7 +24,7 @@ window.Bitacora.services=window.Bitacora.services||{};
     },
     create(data){
       if(demo())return demoService().create(data);
-      return firebase.firestore().collection('incidents').add({...data,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+      return firebase.firestore().collection('users').doc(data.assignedTo).get().then(u=>{if(!u.exists||(u.data()||{}).isActive===false)throw new Error('No se puede asignar una incidencia a un usuario inactivo.');return firebase.firestore().collection('incidents').add({...data,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()})});
     },
     update(id,status){
       if(demo())return demoService().update(id,status);
