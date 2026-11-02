@@ -41,18 +41,18 @@ window.Bitacora=window.Bitacora||{};(function(B){
   function configureOperatorDashboard(){
     const operator=B.currentUser&&B.currentUser.role==='operator';
     const box=el('view-dashboard');if(!box)return;
-    configureOperatorDashboard();
     const stats=box.querySelector('.stats-grid'),grid=box.querySelector('.dashboard-grid'),alerts=el('dashboardAlerts');
-    if(stats)stats.hidden=operator;
-    if(grid)grid.hidden=operator;
-    if(alerts)alerts.hidden=operator;
+    if(stats){stats.hidden=operator;stats.style.display=operator?'none':'';}
+    if(grid){grid.hidden=operator;grid.style.display=operator?'none':'';}
+    if(alerts){alerts.hidden=operator;alerts.style.display=operator?'none':'';}
     let panel=el('operatorRoster');
     if(operator&&!panel){panel=document.createElement('div');panel.id='operatorRoster';panel.className='card';const head=box.querySelector('.page-head');if(head)head.insertAdjacentElement('afterend',panel)}
-    if(panel)panel.hidden=!operator;
+    if(panel){panel.hidden=!operator;panel.style.display=operator?'block':'none';}
     if(operator){B.services.users.list().then(list=>{rosterUsers=list||[];renderOperatorRoster()}).catch(e=>console.error('No se pudo cargar el personal:',e));renderOperatorRoster()}
   }
   function bind(){
     const box=el('view-dashboard');if(!box)return;
+    configureOperatorDashboard();
     let panel=el('dashboardAlerts');
     if(!panel){
       panel=document.createElement('div');panel.id='dashboardAlerts';panel.className='card dashboard-alerts';
