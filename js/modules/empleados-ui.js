@@ -27,8 +27,8 @@ window.Bitacora=window.Bitacora||{};(function(B){
     const name=el('newEmployeeName').value.trim(),email=el('newEmployeeEmail').value.trim().toLowerCase(),password=el('newEmployeePassword').value,role=el('newEmployeeRole').value;
     if(!name||!email||!password)return B.notify('Completa nombre, correo y contraseña inicial');
     if(password.length<6)return B.notify('La contraseña debe tener al menos 6 caracteres');
-    if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))return B.notify('Introduce un correo válido');
-    const max=users.reduce((n,u)=>{const m=String(u.employeeCode||'').match(/^EMP-(\\d+)$/);return m?Math.max(n,Number(m[1])):n},0);
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return B.notify('Introduce un correo válido');
+    const max=users.reduce((n,u)=>{const m=String(u.employeeCode||'').match(/^EMP-(\d+)$/);return m?Math.max(n,Number(m[1])):n},0);
     const employeeCode='EMP-'+String(max+1).padStart(3,'0');
     const btn=el('btnCreateEmployee');if(btn)btn.disabled=true;
     try{await B.services.users.create({name,email,password,role,employeeCode});el('newEmployeeName').value='';el('newEmployeeEmail').value='';el('newEmployeePassword').value='';await load();B.notify('Empleado creado correctamente · '+employeeCode)}
