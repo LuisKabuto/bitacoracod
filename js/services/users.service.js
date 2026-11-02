@@ -35,6 +35,8 @@ window.Bitacora.services = window.Bitacora.services || {};
       if(!rt||typeof rt.getUsers!=='function')throw new Error('El servicio de usuarios aún no está disponible');
       return rt.getUsers();
     },
+    create:async data=>{const rt=await waitRuntime();if(!rt||typeof rt.adminCreateUser!=='function')throw new Error('La gestión de cuentas no está disponible');return rt.adminCreateUser(data)},
+    setActive:async(uid,isActive)=>{const rt=await waitRuntime();if(!rt||typeof rt.setUserActive!=='function')throw new Error('La gestión de cuentas no está disponible');return rt.setUserActive(uid,isActive)},
     assignSequentialCodes:async()=>{
       if(typeof DEMO!=='undefined'&&DEMO)return {updated:0,skipped:0};
       const db=firebase.firestore(),snap=await db.collection('users').get();
